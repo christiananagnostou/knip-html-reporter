@@ -2,7 +2,7 @@
  * Default CSS styles for the HTML report
  */
 export function getDefaultStyles(): string {
-  return `
+  return /* css */ `
     * {
       margin: 0;
       padding: 0;

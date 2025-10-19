@@ -3,7 +3,7 @@
  * This code is embedded in the generated HTML report
  */
 export function getInteractiveScript(): string {
-  return `
+  return /* html */ `
 <script>
 (function() {
   'use strict';

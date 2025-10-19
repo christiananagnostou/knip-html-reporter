@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises'
-import { resolve, join } from 'node:path'
+import { resolve } from 'node:path'
 import { existsSync } from 'node:fs'
 import type { HtmlReporterConfig } from './types.js'
 import { DEFAULT_CONFIG } from './types.js'

@@ -5,9 +5,6 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "bin": {
-    "knip-html-reporter": "./dist/cli.js"
-  },
   "exports": {
     ".": {
       "import": "./dist/index.js",
@@ -21,10 +18,9 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "clean": "rm -rf dist",
-    "demo": "node demo.js",
+    "demo": "npm run build && node demo.js",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
     "prepublishOnly": "npm run clean && npm run build"
   },
@@ -34,10 +30,20 @@
     "html",
     "report",
     "visualization",
-    "analysis"
+    "analysis",
+    "interactive",
+    "typescript"
   ],
-  "author": "",
+  "author": "Christian Anagnostou",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/christiananagnostou/knip-html.git"
+  },
+  "homepage": "https://github.com/christiananagnostou/knip-html#readme",
+  "bugs": {
+    "url": "https://github.com/christiananagnostou/knip-html/issues"
+  },
   "peerDependencies": {
     "knip": ">=5.1.0"
   },
