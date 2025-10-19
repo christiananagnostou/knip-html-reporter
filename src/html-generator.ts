@@ -113,7 +113,7 @@ function generateSummary(counters: ReporterOptions['counters']): string {
   if (total === 0) {
     return `
       <div class="summary success">
-        <h2>✅ All Clear!</h2>
+        <h2>All Clear!</h2>
         <p>No issues found in your project.</p>
       </div>
     `

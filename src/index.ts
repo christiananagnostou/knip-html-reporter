@@ -24,12 +24,12 @@ const reporter: Reporter = async (options) => {
   // Write HTML file
   const outputPath = await writeHtmlFile(html, config.output, cwd)
 
-  console.log(`\n✅ HTML report generated: ${outputPath}`)
+  console.log(`\nHTML report generated: ${outputPath}`)
 
   // Optionally open in browser
   if (config.autoOpen) {
     await openInBrowser(outputPath)
-    console.log('🌐 Opened report in browser')
+    console.log('Opened report in browser')
   }
 }
 

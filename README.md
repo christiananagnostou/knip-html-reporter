@@ -6,13 +6,13 @@
 
 ## Features
 
-- 🔍 **Interactive Search** - Real-time filtering across all issues
-- 🏷️ **Smart Filtering** - One-click filtering by issue type
-- 🔗 **IDE Integration** - Click to open files directly in VS Code
-- 📂 **Collapsible Sections** - Expand/collapse file sections
-- 🎨 **Customizable** - Use default styles or provide your own CSS
-- 📊 **Summary Dashboard** - Quick overview with issue counts
-- 📱 **Responsive** - Works great on desktop and mobile
+- **Interactive Search** - Real-time filtering across all issues
+- **Smart Filtering** - One-click filtering by issue type
+- **IDE Integration** - Click to open files directly in VS Code
+- **Collapsible Sections** - Expand/collapse file sections
+- **Customizable** - Use default styles or provide your own CSS
+- **Summary Dashboard** - Quick overview with issue counts
+- **Responsive** - Works great on desktop and mobile
 - ⚡ **Zero Dependencies** - Fast, lightweight, works offline
 
 ## Installation
@@ -80,7 +80,7 @@ npx knip --reporter knip-html-reporter \
 
 ## Interactive Features
 
-### 🔍 Search
+###  Search
 
 Type in the search box to instantly filter issues. Searches across:
 
@@ -89,7 +89,7 @@ Type in the search box to instantly filter issues. Searches across:
 - Symbol names
 - All content
 
-### 🏷️ Filters
+### ️Filters
 
 Click filter buttons to show specific issue types:
 
@@ -100,14 +100,14 @@ Click filter buttons to show specific issue types:
 - Types
 - And more...
 
-### 🔗 IDE Integration
+### IDE Integration
 
 - **⚡ buttons** next to each issue open files in your IDE
 - Opens to exact line and column
 - Works with VS Code out of the box
 - Configurable for other IDEs
 
-### 📂 Collapsible Sections
+### Collapsible Sections
 
 - Click file names to expand/collapse
 - Auto-expands when issues match filters

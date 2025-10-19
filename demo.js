@@ -201,24 +201,24 @@ const mockOptions = {
 }
 
 // Generate the demo report
-console.log('🎨 Generating demo HTML report...\n')
+console.log('Generating demo HTML report...\n')
 ;(async () => {
   try {
     await reporter(mockOptions)
 
-    console.log('\n✨ Demo complete!')
-    console.log('\n📄 Report generated: demo-report.html')
-    console.log('\n🔍 This report includes:')
+    console.log('\nDemo complete!')
+    console.log('\nReport generated: demo-report.html')
+    console.log('\nThis report includes:')
     console.log('  • Interactive search')
     console.log('  • Filter buttons by issue type')
     console.log('  • ⚡ IDE integration buttons')
     console.log('  • Collapsible file sections')
-    console.log('\n💡 Try these in the report:')
+    console.log('\nTry these in the report:')
     console.log('  1. Type "unused" in the search box')
     console.log('  2. Click filter buttons to show specific issue types')
     console.log('  3. Click ⚡ buttons to open files in VS Code')
     console.log('  4. Click file names to collapse/expand sections')
-    console.log('\n🚀 Opening report in browser...')
+    console.log('\nOpening report in browser...')
 
     // Open the report in browser
     const platform = process.platform
@@ -234,7 +234,7 @@ console.log('🎨 Generating demo HTML report...\n')
 
     await execAsync(command)
 
-    console.log('\n📖 To use with real Knip results:')
+    console.log('\nTo use with real Knip results:')
     console.log('  npx knip --reporter knip-html-reporter')
   } catch (error) {
     console.error('Error generating demo:', error)

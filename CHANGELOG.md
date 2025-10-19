@@ -8,16 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- 🔍 **Interactive Search**: Real-time search across all issues, files, and symbols
-- 🏷️ **Smart Filtering**: Filter issues by type with clickable buttons
-- 🔗 **IDE Integration**: Open files directly in VS Code at specific lines
+- **Interactive Search**: Real-time search across all issues, files, and symbols
+- ️**Smart Filtering**: Filter issues by type with clickable buttons
+- **IDE Integration**: Open files directly in VS Code at specific lines
   - File-level buttons to open entire files
   - Issue-level buttons (⚡) to jump to exact line and column
-- 📂 **Collapsible Sections**: Click file names to expand/collapse issue details
-- ✨ **Interactive UI**: Modern, responsive design with hover effects
-- 🧪 **Comprehensive Test Suite**: Vitest tests for all core functionality
-- 🔄 **CI/CD Pipeline**: GitHub Actions workflow for automated testing
-- 📚 **Extended Documentation**:
+- **Collapsible Sections**: Click file names to expand/collapse issue details
+- **Interactive UI**: Modern, responsive design with hover effects
+- **Comprehensive Test Suite**: Vitest tests for all core functionality
+- **CI/CD Pipeline**: GitHub Actions workflow for automated testing
+- **Extended Documentation**:
   - FEATURES.md - Detailed interactive features guide
   - ARCHITECTURE.md - Technical architecture documentation
   - QUICKSTART.md - Quick start guide
