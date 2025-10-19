@@ -15,7 +15,9 @@ const execAsync = promisify(exec)
 // Mock Knip analysis results (using JSDoc type hint to ignore type errors)
 /** @type {any} */
 const mockOptions = {
-  report: {},
+  report: {
+    files: ['src/unused-file.ts', 'src/old-component.tsx', 'public/scripts/old-script.js'],
+  },
   issues: {
     'package.json': {
       dependencies: [{ name: 'unused-package', line: 12, col: 5, pos: 234 }],
@@ -50,7 +52,7 @@ const mockOptions = {
     },
   },
   counters: {
-    files: 0,
+    files: 3,
     dependencies: 1,
     devDependencies: 0,
     unlisted: 2,

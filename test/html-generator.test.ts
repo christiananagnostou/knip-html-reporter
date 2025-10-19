@@ -21,6 +21,13 @@ describe('HTML Generator', () => {
     duplicates: 0,
     enumMembers: 0,
     classMembers: 1,
+    _files: 0,
+    optionalPeerDependencies: 0,
+    binaries: 0,
+    nsExports: 0,
+    nsTypes: 0,
+    processed: 0,
+    total: 0,
   }
 
   const mockIssues: ReporterOptions['issues'] = {
@@ -40,6 +47,74 @@ describe('HTML Generator', () => {
   const mockReport: ReporterOptions['report'] = {
     files: ['src/unused-file.ts', 'src/old-component.tsx'],
   }
+
+  it('should display unused files from report.files', () => {
+    const html = generateHtml({
+      issues: {} as any,
+      counters: { ...mockCounters, files: 2 },
+      report: mockReport,
+      config: mockConfig,
+    })
+
+    expect(html).toContain('Unused Files')
+    expect(html).toContain('src/unused-file.ts')
+    expect(html).toContain('src/old-component.tsx')
+  })
+
+  it('should display issues from issues object', () => {
+    const html = generateHtml({
+      issues: mockIssues,
+      counters: mockCounters,
+      report: { files: [] } as any,
+      config: mockConfig,
+    })
+
+    expect(html).toContain('src/index.ts')
+    expect(html).toContain('unusedFunction')
+    expect(html).toContain('unusedHelper')
+    expect(html).toContain('package.json')
+    expect(html).toContain('unused-package')
+  })
+
+  it('should display both unused files and issues together', () => {
+    const html = generateHtml({
+      issues: mockIssues,
+      counters: mockCounters,
+      report: mockReport,
+      config: mockConfig,
+    })
+
+    // Should contain unused files
+    expect(html).toContain('Unused Files')
+    expect(html).toContain('src/unused-file.ts')
+
+    // Should contain regular issues
+    expect(html).toContain('src/index.ts')
+    expect(html).toContain('unusedFunction')
+  })
+
+  it('should handle empty report and issues gracefully', () => {
+    const emptyCounters = {
+      files: 0,
+      dependencies: 0,
+      devDependencies: 0,
+      unlisted: 0,
+      unresolved: 0,
+      exports: 0,
+      types: 0,
+      duplicates: 0,
+      enumMembers: 0,
+      classMembers: 0,
+    }
+    const html = generateHtml({
+      issues: {} as any,
+      counters: emptyCounters as any,
+      report: { files: [] } as any,
+      config: mockConfig,
+    })
+
+    expect(html).toContain('All Clear')
+  })
 
   it('should generate valid HTML structure', () => {
     const html = generateHtml({
@@ -129,16 +204,16 @@ describe('HTML Generator', () => {
   })
 
   it('should escape HTML in file paths and issue names', () => {
-    const maliciousIssues: ReporterOptions['issues'] = {
+    const maliciousIssues = {
       '<script>alert("xss")</script>': {
         exports: [{ name: '<img src=x onerror=alert(1)>', line: 1, col: 1, pos: 0 }],
       },
-    }
+    } as any
 
     const html = generateHtml({
       issues: maliciousIssues,
-      counters: { exports: 1 },
-      report: { files: [] },
+      counters: { ...mockCounters, exports: 1 },
+      report: { files: [] } as any,
       config: mockConfig,
     })
 
@@ -149,10 +224,11 @@ describe('HTML Generator', () => {
   })
 
   it('should show success message when no issues', () => {
+    const emptyCounters = Object.keys(mockCounters).reduce((acc, key) => ({ ...acc, [key]: 0 }), {}) as any
     const html = generateHtml({
-      issues: {},
-      counters: {},
-      report: { files: [] },
+      issues: {} as any,
+      counters: emptyCounters,
+      report: { files: [] } as any,
       config: mockConfig,
     })
 

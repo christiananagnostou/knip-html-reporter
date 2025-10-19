@@ -151,17 +151,46 @@ function generateIssuesSection(
   report: ReporterOptions['report'],
   config: GenerateHtmlOptions['config']
 ): string {
-  if (!issues || Object.keys(issues).length === 0) {
+  const hasIssues = issues && Object.keys(issues).length > 0
+  const hasUnusedFiles = report.files && Array.isArray(report.files) && report.files.length > 0
+
+  if (!hasIssues && !hasUnusedFiles) {
     return ''
   }
 
-  const sections = Object.entries(issues)
-    .map(([file, fileIssues]) => {
-      const fileIssuesList = generateFileIssues(fileIssues, file, config)
+  let sections = ''
 
-      if (!fileIssuesList) return ''
+  // Add unused files section first if they exist
+  if (hasUnusedFiles) {
+    const filesArray = Array.isArray(report.files) ? report.files : []
+    sections += `
+      <div class="file-section">
+        <h3 class="file-name">Unused Files</h3>
+        <div class="issue-type">
+          <h4>Files</h4>
+          <ul>
+            ${filesArray
+              .map((file: string) => {
+                return `<li>${escapeHtml(file)}<button class="ide-btn-inline" onclick="openInIDE('${escapeHtml(
+                  file
+                )}', 1, 1)" title="Open in IDE">⚡</button></li>`
+              })
+              .join('')}
+          </ul>
+        </div>
+      </div>
+    `
+  }
 
-      return `
+  // Add regular issues organized by file
+  if (hasIssues) {
+    sections += Object.entries(issues)
+      .map(([file, fileIssues]) => {
+        const fileIssuesList = generateFileIssues(fileIssues, file, config)
+
+        if (!fileIssuesList) return ''
+
+        return `
       <div class="file-section">
         <h3 class="file-name">
           ${escapeHtml(file)}
@@ -175,9 +204,10 @@ function generateIssuesSection(
         ${fileIssuesList}
       </div>
     `
-    })
-    .filter(Boolean)
-    .join('')
+      })
+      .filter(Boolean)
+      .join('')
+  }
 
   return `
     <div class="issues-section">
