@@ -1,0 +1,51 @@
+{
+  "name": "knip-html-reporter",
+  "version": "0.1.0",
+  "description": "A beautiful HTML reporter for Knip that transforms analysis results into interactive reports",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "knip-html-reporter": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "demo": "node demo.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "keywords": [
+    "knip",
+    "reporter",
+    "html",
+    "report",
+    "visualization",
+    "analysis"
+  ],
+  "author": "",
+  "license": "MIT",
+  "peerDependencies": {
+    "knip": ">=5.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@vitest/ui": "^2.0.0",
+    "knip": "^5.1.0",
+    "typescript": "^5.0.0",
+    "vitest": "^2.0.0"
+  }
+}

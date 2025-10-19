@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Knip HTML Reporter Configuration",
+  "description": "Configuration options for knip-html-reporter",
+  "type": "object",
+  "properties": {
+    "output": {
+      "type": "string",
+      "description": "Path to the output HTML file (relative to project root)",
+      "default": "knip-report.html"
+    },
+    "autoStyles": {
+      "type": "boolean",
+      "description": "Automatically include default styles in the HTML output",
+      "default": true
+    },
+    "autoOpen": {
+      "type": "boolean",
+      "description": "Automatically open the HTML file in the default browser after generation",
+      "default": false
+    },
+    "customStyles": {
+      "type": "string",
+      "description": "Path to a custom CSS file to include in the HTML output"
+    },
+    "title": {
+      "type": "string",
+      "description": "Title for the HTML report",
+      "default": "Knip Analysis Report"
+    }
+  }
+}
