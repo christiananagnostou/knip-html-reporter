@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
 - **Interactive Search**: Real-time search across all issues, files, and symbols
 - ️**Smart Filtering**: Filter issues by type with clickable buttons
 - **IDE Integration**: Open files directly in VS Code at specific lines
@@ -24,18 +25,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Comprehensive README updates
 
 ### Changed
+
 - Updated HTML generation to include interactive controls
 - Enhanced styling with new interactive element styles
 - Improved error handling in configuration loading
 - Better file path handling with automatic directory creation
 
 ### Fixed
+
 - Directory creation for nested output paths
 - HTML escaping to prevent XSS vulnerabilities
 
 ## [0.1.0] - Initial Release
 
 ### Added
+
 - Basic HTML report generation from Knip results
 - Configuration system with multiple sources:
   - JSON config files

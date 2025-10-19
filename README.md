@@ -80,7 +80,7 @@ npx knip --reporter knip-html-reporter \
 
 ## Interactive Features
 
-###  Search
+### Search
 
 Type in the search box to instantly filter issues. Searches across:
 

@@ -4,7 +4,7 @@
 
 The HTML reporter includes powerful interactive features that make browsing and filtering issues easy and efficient.
 
-##  Search Functionality
+## Search Functionality
 
 ### Real-time Search
 
@@ -60,7 +60,7 @@ You can use search and filters together:
 2. Then, use search to narrow down within those types
 3. This gives you precise control over what you see
 
-##  IDE Integration
+## IDE Integration
 
 ### Open Files Directly
 
@@ -92,7 +92,7 @@ To use with other IDEs, you can modify the protocol in the generated HTML:
 
 Or configure your IDE to handle the `vscode://` protocol.
 
-##  Collapsible Sections
+## Collapsible Sections
 
 ### Toggle File Sections
 
@@ -111,7 +111,7 @@ Click any file name to collapse/expand its issues:
 
 When you search or filter, collapsed sections automatically expand if they contain matching results.
 
-##  Visual Feedback
+## Visual Feedback
 
 ### Interactive States
 
@@ -138,7 +138,7 @@ Future versions may include:
 - Arrow keys: Navigate between issues
 - Enter: Open first result in IDE
 
-##  Performance
+## Performance
 
 ### Optimized for Large Reports
 
@@ -157,7 +157,7 @@ Works in all modern browsers:
 - Safari: ✅
 - Opera: ✅
 
-##  Tips & Tricks
+## Tips & Tricks
 
 ### Power User Workflows
 
@@ -201,7 +201,7 @@ Works in all modern browsers:
 - `class` - Class member issues
 - `enum` - Enum member issues
 
-##  Refreshing Data
+## Refreshing Data
 
 The report is static HTML, so to see updated results:
 
@@ -211,7 +211,7 @@ The report is static HTML, so to see updated results:
 
 The interactive features work entirely client-side, so all filtering and searching happens instantly without any server.
 
-##  Troubleshooting
+## Troubleshooting
 
 **Search not working?**
 
