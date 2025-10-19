@@ -1,4 +1,5 @@
 import type { ReporterOptions } from 'knip'
+import type { Issues, Issue, IssueType } from 'knip/dist/types/issues.js'
 import type { HtmlReporterConfig } from './types.js'
 import { getDefaultStyles } from './styles.js'
 import { getInteractiveScript } from './interactive.js'
@@ -151,18 +152,11 @@ function generateIssuesSection(
   report: ReporterOptions['report'],
   config: GenerateHtmlOptions['config']
 ): string {
-  const hasIssues = issues && Object.keys(issues).length > 0
-  const hasUnusedFiles = report.files && Array.isArray(report.files) && report.files.length > 0
-
-  if (!hasIssues && !hasUnusedFiles) {
-    return ''
-  }
-
   let sections = ''
 
   // Add unused files section first if they exist
-  if (hasUnusedFiles) {
-    const filesArray = Array.isArray(report.files) ? report.files : []
+  if (issues.files && issues.files.size > 0) {
+    const filesArray = Array.from(issues.files)
     sections += `
       <div class="file-section">
         <h3 class="file-name">Unused Files</h3>
@@ -182,11 +176,11 @@ function generateIssuesSection(
     `
   }
 
-  // Add regular issues organized by file
-  if (hasIssues) {
-    sections += Object.entries(issues)
+  // Add regular issues organized by file from _files
+  if (issues._files && Object.keys(issues._files).length > 0) {
+    sections += Object.entries(issues._files)
       .map(([file, fileIssues]) => {
-        const fileIssuesList = generateFileIssues(fileIssues, file, config)
+        const fileIssuesList = generateFileIssuesFromRecords(fileIssues, file, config)
 
         if (!fileIssuesList) return ''
 
@@ -209,6 +203,55 @@ function generateIssuesSection(
       .join('')
   }
 
+  // Process other issue types (dependencies, exports, etc.) from IssueRecords
+  const issueTypes: Array<keyof Issues> = [
+    'dependencies',
+    'devDependencies',
+    'optionalPeerDependencies',
+    'unlisted',
+    'binaries',
+    'unresolved',
+    'exports',
+    'types',
+    'nsExports',
+    'nsTypes',
+    'duplicates',
+    'enumMembers',
+    'classMembers',
+  ]
+
+  issueTypes.forEach((issueType) => {
+    const issueRecords = issues[issueType]
+    if (issueRecords && Object.keys(issueRecords).length > 0) {
+      sections += Object.entries(issueRecords)
+        .map(([file, symbolIssues]) => {
+          const issuesList = generateIssueTypeFromRecords(issueType, symbolIssues, file, config)
+          if (!issuesList) return ''
+
+          return `
+        <div class="file-section">
+          <h3 class="file-name">
+            ${escapeHtml(file)}
+            <button class="ide-btn" onclick="openInIDE('${escapeHtml(file)}', 1, 1)" title="Open in IDE">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M14.5 3l-1-1L3 12.5l1 1L14.5 3z"/>
+                <path d="M9 2h1v4H9V2zm-4 4h1v2H5V6zm8 0h1v2h-1V6z"/>
+              </svg>
+            </button>
+          </h3>
+          ${issuesList}
+        </div>
+      `
+        })
+        .filter(Boolean)
+        .join('')
+    }
+  })
+
+  if (!sections) {
+    return ''
+  }
+
   return `
     <div class="issues-section">
       <h2>Issues by File</h2>
@@ -218,6 +261,78 @@ function generateIssuesSection(
 }
 
 /**
+ * Generate issues for a file from _files IssueRecords
+ */
+function generateFileIssuesFromRecords(
+  fileIssues: Record<string, Issue>,
+  filePath: string,
+  config: GenerateHtmlOptions['config']
+): string {
+  if (!fileIssues || Object.keys(fileIssues).length === 0) {
+    return ''
+  }
+
+  const issueItems = Object.entries(fileIssues)
+    .map(([symbol, issue]) => {
+      const line = issue.line ?? 1
+      const col = issue.col ?? 1
+      return `<li>
+        <span class="symbol">${escapeHtml(symbol)}</span>
+        <span class="position">Line ${line}, Col ${col}</span>
+        <button class="ide-btn-inline" onclick="openInIDE('${escapeHtml(
+          filePath
+        )}', ${line}, ${col})" title="Open in IDE">⚡</button>
+      </li>`
+    })
+    .join('')
+
+  return `
+    <div class="issue-type">
+      <h4>Issues</h4>
+      <ul>${issueItems}</ul>
+    </div>
+  `
+}
+
+/**
+ * Generate issues for a specific issue type from IssueRecords
+ */
+function generateIssueTypeFromRecords(
+  issueType: IssueType,
+  symbolIssues: Record<string, Issue>,
+  filePath: string,
+  config: GenerateHtmlOptions['config']
+): string {
+  if (!symbolIssues || Object.keys(symbolIssues).length === 0) {
+    return ''
+  }
+
+  const title = formatIssueType(issueType)
+
+  const issueItems = Object.entries(symbolIssues)
+    .map(([symbol, issue]) => {
+      const line = issue.line ?? 1
+      const col = issue.col ?? 1
+      return `<li>
+        <span class="symbol">${escapeHtml(symbol)}</span>
+        <span class="position">Line ${line}, Col ${col}</span>
+        <button class="ide-btn-inline" onclick="openInIDE('${escapeHtml(
+          filePath
+        )}', ${line}, ${col})" title="Open in IDE">⚡</button>
+      </li>`
+    })
+    .join('')
+
+  return `
+    <div class="issue-type">
+      <h4>${title}</h4>
+      <ul>${issueItems}</ul>
+    </div>
+  `
+}
+
+/**
+ * OLD FUNCTION - KEPT FOR REFERENCE BUT NOT USED
  * Generate issues for a specific file
  */
 function generateFileIssues(fileIssues: any, filePath: string, config: GenerateHtmlOptions['config']): string {

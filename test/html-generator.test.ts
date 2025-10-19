@@ -31,26 +31,131 @@ describe('HTML Generator', () => {
   }
 
   const mockIssues: ReporterOptions['issues'] = {
-    'src/index.ts': {
-      exports: [
-        { name: 'unusedFunction', line: 10, col: 14, pos: 156 },
-        { name: 'unusedHelper', line: 25, col: 14, pos: 402 },
-      ],
-      unresolved: [{ name: './missing-module', line: 3, col: 20, pos: 45 }],
+    files: new Set(),
+    _files: {
+      'src/index.ts': {
+        unusedFunction: {
+          type: 'exports',
+          symbol: 'unusedFunction',
+          filePath: 'src/index.ts',
+          workspace: '.',
+          line: 10,
+          col: 14,
+          pos: 156,
+        },
+        unusedHelper: {
+          type: 'exports',
+          symbol: 'unusedHelper',
+          filePath: 'src/index.ts',
+          workspace: '.',
+          line: 25,
+          col: 14,
+          pos: 402,
+        },
+      },
     },
-    'package.json': {
-      dependencies: [{ name: 'unused-package', line: 12, col: 5, pos: 234 }],
-      unlisted: [{ name: 'react' }, { name: '@types/node' }],
+    dependencies: {
+      'package.json': {
+        'unused-package': {
+          type: 'dependencies',
+          symbol: 'unused-package',
+          filePath: 'package.json',
+          workspace: '.',
+          line: 12,
+          col: 5,
+          pos: 234,
+        },
+      },
     },
+    devDependencies: {},
+    optionalPeerDependencies: {},
+    unlisted: {
+      'package.json': {
+        react: { type: 'unlisted', symbol: 'react', filePath: 'package.json', workspace: '.' },
+        '@types/node': { type: 'unlisted', symbol: '@types/node', filePath: 'package.json', workspace: '.' },
+      },
+    },
+    binaries: {},
+    unresolved: {
+      'src/index.ts': {
+        './missing-module': {
+          type: 'unresolved',
+          symbol: './missing-module',
+          filePath: 'src/index.ts',
+          workspace: '.',
+          line: 3,
+          col: 20,
+          pos: 45,
+        },
+      },
+    },
+    exports: {
+      'src/index.ts': {
+        unusedFunction: {
+          type: 'exports',
+          symbol: 'unusedFunction',
+          filePath: 'src/index.ts',
+          workspace: '.',
+          line: 10,
+          col: 14,
+          pos: 156,
+        },
+        unusedHelper: {
+          type: 'exports',
+          symbol: 'unusedHelper',
+          filePath: 'src/index.ts',
+          workspace: '.',
+          line: 25,
+          col: 14,
+          pos: 402,
+        },
+      },
+    },
+    nsExports: {},
+    types: {},
+    nsTypes: {},
+    enumMembers: {},
+    classMembers: {},
+    duplicates: {},
   }
 
   const mockReport: ReporterOptions['report'] = {
-    files: ['src/unused-file.ts', 'src/old-component.tsx'],
+    files: true,
+    _files: false,
+    dependencies: true,
+    devDependencies: false,
+    optionalPeerDependencies: false,
+    unlisted: true,
+    binaries: false,
+    unresolved: true,
+    exports: true,
+    nsExports: false,
+    types: false,
+    nsTypes: false,
+    enumMembers: false,
+    classMembers: false,
+    duplicates: false,
   }
 
-  it('should display unused files from report.files', () => {
+  it('should display unused files from issues.files', () => {
     const html = generateHtml({
-      issues: {} as any,
+      issues: {
+        files: new Set(['src/unused-file.ts', 'src/old-component.tsx']),
+        _files: {},
+        dependencies: {},
+        devDependencies: {},
+        optionalPeerDependencies: {},
+        unlisted: {},
+        binaries: {},
+        unresolved: {},
+        exports: {},
+        nsExports: {},
+        types: {},
+        nsTypes: {},
+        enumMembers: {},
+        classMembers: {},
+        duplicates: {},
+      },
       counters: { ...mockCounters, files: 2 },
       report: mockReport,
       config: mockConfig,
@@ -65,7 +170,7 @@ describe('HTML Generator', () => {
     const html = generateHtml({
       issues: mockIssues,
       counters: mockCounters,
-      report: { files: [] } as any,
+      report: mockReport,
       config: mockConfig,
     })
 
@@ -77,8 +182,13 @@ describe('HTML Generator', () => {
   })
 
   it('should display both unused files and issues together', () => {
+    const issuesWithFiles: ReporterOptions['issues'] = {
+      ...mockIssues,
+      files: new Set(['src/unused-file.ts', 'src/old-component.tsx']),
+    }
+
     const html = generateHtml({
-      issues: mockIssues,
+      issues: issuesWithFiles,
       counters: mockCounters,
       report: mockReport,
       config: mockConfig,
@@ -204,16 +314,40 @@ describe('HTML Generator', () => {
   })
 
   it('should escape HTML in file paths and issue names', () => {
-    const maliciousIssues = {
-      '<script>alert("xss")</script>': {
-        exports: [{ name: '<img src=x onerror=alert(1)>', line: 1, col: 1, pos: 0 }],
+    const maliciousIssues: ReporterOptions['issues'] = {
+      files: new Set(),
+      _files: {
+        '<script>alert("xss")</script>': {
+          '<img src=x onerror=alert(1)>': {
+            type: 'exports',
+            symbol: '<img src=x onerror=alert(1)>',
+            filePath: '<script>alert("xss")</script>',
+            workspace: '.',
+            line: 1,
+            col: 1,
+            pos: 0,
+          },
+        },
       },
-    } as any
+      dependencies: {},
+      devDependencies: {},
+      optionalPeerDependencies: {},
+      unlisted: {},
+      binaries: {},
+      unresolved: {},
+      exports: {},
+      nsExports: {},
+      types: {},
+      nsTypes: {},
+      enumMembers: {},
+      classMembers: {},
+      duplicates: {},
+    }
 
     const html = generateHtml({
       issues: maliciousIssues,
-      counters: { ...mockCounters, exports: 1 },
-      report: { files: [] } as any,
+      counters: { ...mockCounters, _files: 1 },
+      report: mockReport,
       config: mockConfig,
     })
 
@@ -225,10 +359,28 @@ describe('HTML Generator', () => {
 
   it('should show success message when no issues', () => {
     const emptyCounters = Object.keys(mockCounters).reduce((acc, key) => ({ ...acc, [key]: 0 }), {}) as any
+    const emptyIssues: ReporterOptions['issues'] = {
+      files: new Set(),
+      _files: {},
+      dependencies: {},
+      devDependencies: {},
+      optionalPeerDependencies: {},
+      unlisted: {},
+      binaries: {},
+      unresolved: {},
+      exports: {},
+      nsExports: {},
+      types: {},
+      nsTypes: {},
+      enumMembers: {},
+      classMembers: {},
+      duplicates: {},
+    }
+
     const html = generateHtml({
-      issues: {} as any,
+      issues: emptyIssues,
       counters: emptyCounters,
-      report: { files: [] } as any,
+      report: mockReport,
       config: mockConfig,
     })
 
@@ -283,7 +435,8 @@ describe('HTML Generator', () => {
       config: mockConfig,
     })
 
-    expect(html).toContain(':10:14') // line:col from unusedFunction
-    expect(html).toContain('location') // class name
+    expect(html).toContain('Line 10') // line from unusedFunction
+    expect(html).toContain('Col 14') // col from unusedFunction
+    expect(html).toContain('position') // class name for position display
   })
 })
