@@ -6,14 +6,12 @@
 
 ## Features
 
-- **Interactive Search** - Real-time filtering across all issues
-- **Smart Filtering** - One-click filtering by issue type
+- **Search** - Real-time filtering across all issues
+- **Filtering** - One-click filtering by issue type
 - **IDE Integration** - Click to open files directly in VS Code
-- **Collapsible Sections** - Expand/collapse file sections
 - **Customizable** - Use default styles or provide your own CSS
-- **Summary Dashboard** - Quick overview with issue counts
 - **Responsive** - Works great on desktop and mobile
-- ⚡ **Zero Dependencies** - Fast, lightweight, works offline
+- **Zero Dependencies** - Fast, lightweight, works offline
 
 ## Installation
 
@@ -82,50 +80,20 @@ npx knip --reporter knip-html-reporter \
 
 ### Search
 
-Type in the search box to instantly filter issues. Searches across:
-
-- File paths
-- Issue types
-- Symbol names
-- All content
+Type in the search box to instantly filter issues.
 
 ### ️Filters
 
-Click filter buttons to show specific issue types:
-
-- Exports
-- Dependencies
-- Unlisted Dependencies
-- Unresolved Imports
-- Types
-- And more...
+Click filter buttons to show specific issue types.
 
 ### IDE Integration
 
-- **⚡ buttons** next to each issue open files in your IDE
-- Opens to exact line and column
+Opens the issue to the exact line and column in your IDE
+
 - Works with VS Code out of the box
 - Configurable for other IDEs
 
-### Collapsible Sections
-
-- Click file names to expand/collapse
-- Auto-expands when issues match filters
-- Great for large reports
-
 See [FEATURES.md](./FEATURES.md) for detailed documentation.
-
-## What Gets Reported
-
-- Unused files
-- Unused dependencies
-- Unlisted dependencies
-- Unused exports
-- Unresolved imports
-- Unused types
-- Unused class members
-- Unused enum members
-- Duplicate exports
 
 ## Use with Multiple Reporters
 
