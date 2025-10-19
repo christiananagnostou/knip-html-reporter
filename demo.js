@@ -1,19 +1,21 @@
 #!/usr/bin/env node
 
 /**
- * Demo script to show example usage of knip-html-reporter
- *
+ * Demo script to show example usage of knip-html-reporter.
  * This creates a mock Knip result and generates an HTML report
- * to demonstrate what the output looks like.
+ * to demonstrate what the output looks like with real interactive features.
  */
 
 import reporter from './dist/index.js'
+import { exec } from 'node:child_process'
+import { promisify } from 'node:util'
 
-// Mock Knip analysis results
+const execAsync = promisify(exec)
+
+// Mock Knip analysis results (using JSDoc type hint to ignore type errors)
+/** @type {any} */
 const mockOptions = {
-  report: {
-    files: ['src/unused-file.ts', 'src/old-component.tsx'],
-  },
+  report: {},
   issues: {
     'package.json': {
       dependencies: [{ name: 'unused-package', line: 12, col: 5, pos: 234 }],
@@ -48,7 +50,7 @@ const mockOptions = {
     },
   },
   counters: {
-    files: 2,
+    files: 0,
     dependencies: 1,
     devDependencies: 0,
     unlisted: 2,
@@ -60,6 +62,9 @@ const mockOptions = {
     enumMembers: 0,
   },
   configurationHints: {},
+  tagHints: {},
+  preprocessorOptions: {},
+  includedWorkspaceDirs: [],
   isDisableConfigHints: false,
   isTreatConfigHintsAsErrors: false,
   cwd: process.cwd(),
@@ -74,15 +79,42 @@ const mockOptions = {
 
 // Generate the demo report
 console.log('🎨 Generating demo HTML report...\n')
+;(async () => {
+  try {
+    await reporter(mockOptions)
 
-reporter(mockOptions)
-  .then(() => {
     console.log('\n✨ Demo complete!')
-    console.log('\nOpen demo-report.html in your browser to see the report.')
-    console.log('\nTo use with real Knip results, run:')
+    console.log('\n📄 Report generated: demo-report.html')
+    console.log('\n🔍 This report includes:')
+    console.log('  • Interactive search')
+    console.log('  • Filter buttons by issue type')
+    console.log('  • ⚡ IDE integration buttons')
+    console.log('  • Collapsible file sections')
+    console.log('\n💡 Try these in the report:')
+    console.log('  1. Type "unused" in the search box')
+    console.log('  2. Click filter buttons to show specific issue types')
+    console.log('  3. Click ⚡ buttons to open files in VS Code')
+    console.log('  4. Click file names to collapse/expand sections')
+    console.log('\n🚀 Opening report in browser...')
+
+    // Open the report in browser
+    const platform = process.platform
+    let command
+
+    if (platform === 'darwin') {
+      command = 'open demo-report.html'
+    } else if (platform === 'win32') {
+      command = 'start demo-report.html'
+    } else {
+      command = 'xdg-open demo-report.html'
+    }
+
+    await execAsync(command)
+
+    console.log('\n📖 To use with real Knip results:')
     console.log('  npx knip --reporter knip-html-reporter')
-  })
-  .catch((error) => {
+  } catch (error) {
     console.error('Error generating demo:', error)
     process.exit(1)
-  })
+  }
+})()
