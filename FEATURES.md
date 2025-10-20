@@ -2,74 +2,103 @@
 
 ## Overview
 
-The HTML reporter includes powerful interactive features that make browsing and filtering issues easy and efficient.
+The HTML reporter includes powerful interactive features that make browsing and filtering issues easy and efficient. The modern card-based interface shows issue type descriptions directly in the overview section, eliminating redundant text in the issue lists.
+
+## Theme Switcher
+
+### Light, Dark, and System Themes
+
+Choose from three theme options:
+
+- **Light**: Optimized for daylight viewing
+- **Dark**: Reduces eye strain in low-light conditions
+- **System**: Automatically matches your OS preference
+
+### Persistent Preference
+
+Your theme choice is saved in localStorage and persists across sessions.
+
+### How to Use
+
+1. Click the theme buttons in the top-right header
+2. Choose Light, Dark, or System
+3. The report instantly updates to your selected theme
+4. System theme adapts if your OS theme changes
+
+## Overview Cards
+
+### Interactive Issue Type Cards
+
+Click any card in the overview section to filter the entire report:
+
+- **Single click**: Filter to show only that issue type
+- **Click again**: Deselect and show all issues
+- **Multiple selections**: Click multiple cards to combine filters
+
+### Card Information
+
+Each card displays:
+
+- **Issue Type Name**: Clear label (e.g., "Exports", "Dependencies")
+- **Description**: Explains what the issue type means (e.g., "Exported but never used")
+- **Count**: Number of issues of this type
+- **Percentage**: Visual progress bar showing proportion of total
+- **Percentage Value**: Numeric percentage for precise comparison
+
+### Visual Feedback
+
+- **Hover**: Card elevates and shows border gradient
+- **Active**: Blue accent background indicates active filter
+- **Sorted**: Cards ordered by count (highest first)
 
 ## Search Functionality
 
 ### Real-time Search
 
-Type in the search box to instantly filter issues across all files and issue types. The search is:
+Type in the search box to instantly filter issues. The search is:
 
 - **Case-insensitive**: Searches match regardless of case
-- **Comprehensive**: Searches through file names, issue types, and issue content
+- **Granular**: Searches at individual issue level, not just file level
+- **Comprehensive**: Searches through symbol names, file paths, and line positions
 - **Instant**: Results update as you type
+
+### Search Fields
+
+The search looks through:
+
+- **Symbol names**: Function, class, variable names
+- **File paths**: Full path including directory structure
+- **Line positions**: Line and column numbers (e.g., "10:14")
 
 ### How to Use
 
 1. Click or focus on the search input at the top of the report
-2. Start typing (e.g., "unused", "src/", "export")
+2. Start typing (e.g., "unused", "src/", "Component")
 3. Results automatically filter to match your query
 4. Click the "×" button to clear the search
 
 ### Search Tips
 
 - Search for file paths: `src/components`
-- Search for issue types: `export`, `dependency`
-- Search for specific symbols: `MyFunction`
-- Search for patterns: `.tsx`, `test`
+- Search for specific files: `.tsx`, `index.ts`
+- Search for symbols: `MyFunction`, `useState`
+- Search for line numbers: `25:14`
 
-## ️ Filter by Issue Type
+## Combining Filters and Search
 
-### Available Filters
+You can use overview cards and search together for powerful filtering:
 
-Click filter buttons to show only specific types of issues:
-
-- **All**: Show all issues (default)
-- **Exports**: Unused exported values
-- **Dependencies**: Unused dependencies in package.json
-- **Dev Dependencies**: Unused devDependencies
-- **Unlisted**: Dependencies used but not in package.json
-- **Unresolved**: Import paths that can't be resolved
-- **Types**: Unused TypeScript types
-- **Duplicates**: Duplicate exports
-- **Enum Members**: Unused enum members
-- **Class Members**: Unused class methods/properties
-
-### How to Use
-
-1. Click any filter button to activate it
-2. Click multiple buttons to combine filters
-3. Click "All" to reset filters
-4. Active filters are highlighted in blue
-
-### Combining Filters and Search
-
-You can use search and filters together:
-
-1. First, select one or more issue type filters
-2. Then, use search to narrow down within those types
+1. Click one or more overview cards to filter by issue type
+2. Then use search to narrow down within those types
 3. This gives you precise control over what you see
+
+Example: Click "Exports" card, then search for "src/hooks" to see only unused exports in your hooks directory.
 
 ## IDE Integration
 
 ### Open Files Directly
 
-Each issue with a line number has a button to open it directly in your IDE.
-
-### IDE Button Types
-
-- **File-level buttons**: Open the entire file (top right of each file section)
-- **Issue-level buttons**: Open directly to the specific line and column (⚡ icon next to each issue)
+Each issue has a ⚡ button to open it directly in your IDE at the exact line and column.
 
 ### How It Works
 
@@ -111,13 +140,15 @@ Click any file name to collapse/expand its issues:
 
 When you search or filter, collapsed sections automatically expand if they contain matching results.
 
-## Visual Feedback
+## Interactive States
 
-### Interactive States
+### UI Feedback
 
-- **Hover effects**: Buttons and interactive elements highlight on hover
-- **Active filters**: Blue background indicates active filter
+- **Hover effects**: Cards, buttons, and interactive elements highlight on hover
+- **Active cards**: Blue accent background indicates active filter
+- **Card animations**: Cards elevate and show gradient borders on hover
 - **Search indicator**: Clear button (×) appears when search is active
+- **Theme buttons**: Active theme button is highlighted
 
 ### "No Results" Message
 
@@ -127,26 +158,16 @@ When your filters and search don't match any issues:
 - Helps confirm your filters are working
 - Prompts you to adjust filters or search
 
-## ⌨️ Keyboard Shortcuts
-
-### Planned Features
-
-Future versions may include:
-
-- `Ctrl/Cmd + F`: Focus search
-- `Escape`: Clear search
-- Arrow keys: Navigate between issues
-- Enter: Open first result in IDE
-
 ## Performance
 
 ### Optimized for Large Reports
 
 The interactive features are designed for speed:
 
-- **Instant filtering**: No page reloads
-- **Efficient DOM updates**: Only changes what's needed
-- **Smooth scrolling**: Stays responsive with 1000+ issues
+- **Instant filtering**: No page reloads required
+- **Efficient DOM updates**: Only changes visible elements
+- **Client-side only**: All filtering happens in your browser
+- **Smooth animations**: Responsive even with 1000+ issues
 
 ### Browser Compatibility
 
@@ -157,13 +178,21 @@ Works in all modern browsers:
 - Safari: ✅
 - Opera: ✅
 
+### Theme Performance
+
+- **System theme detection**: Instant via CSS media queries
+- **Theme persistence**: Saved in localStorage
+- **No flicker**: Theme applied before page render
+- Safari: ✅
+- Opera: ✅
+
 ## Tips & Tricks
 
 ### Power User Workflows
 
 **Quick Issue Triage:**
 
-1. Use filters to focus on one issue type
+1. Click overview card to focus on one issue type
 2. Search for specific files or patterns
 3. Click IDE buttons to fix issues immediately
 4. Regenerate report to see progress
@@ -190,16 +219,17 @@ Works in all modern browsers:
 - `.tsx` - React TypeScript components
 - `index.` - All index files
 
-**Find dependency issues:**
+**Find specific symbols:**
 
-- `package.json` - All package.json issues
-- `unlisted` - Dependencies not in package.json
+- `useState` - Find React hooks
+- `Component` - Find component classes
+- `interface` - Find TypeScript interfaces
 
-**Find code quality issues:**
+**Find by location:**
 
-- `unused` - All unused items
-- `class` - Class member issues
-- `enum` - Enum member issues
+- `src/hooks` - All issues in hooks directory
+- `components/Button` - Specific component files
+- `10:` - Issues on line 10
 
 ## Refreshing Data
 
@@ -225,11 +255,18 @@ The interactive features work entirely client-side, so all filtering and searchi
 - Check that the `vscode://` protocol is registered
 - Try opening VS Code first, then clicking the button
 
+**Overview cards not filtering?**
+
+- Make sure JavaScript is enabled in your browser
+- Click a card to activate filter (blue background indicates active)
+- Click the card again to deselect
+- Refresh the page if needed
+
 **Filters stuck?**
 
-- Click "All" to reset filters
+- Click the active card again to deselect
 - Refresh the page if needed
-- Check that no search query is active
+- Clear any active search query
 
 **Performance issues?**
 

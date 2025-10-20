@@ -6,20 +6,27 @@
 
 ## Project Structure
 
-```
+```text
 knip-html-reporter/
 ├── src/
 │   ├── index.ts          # Main reporter entry point
 │   ├── types.ts          # TypeScript type definitions
 │   ├── config.ts         # Configuration loading logic
 │   ├── html-generator.ts # HTML generation from Knip results
-│   ├── styles.ts         # Default CSS styles
+│   ├── interactive.ts    # Client-side JavaScript for interactivity
+│   ├── styles.ts         # Default CSS styles with theme system
 │   └── utils.ts          # Utility functions (file I/O, browser opening)
+├── test/                 # Test files
+│   ├── config.test.ts
+│   ├── html-generator.test.ts
+│   ├── interactive.test.ts
+│   └── utils.test.ts
 ├── dist/                 # Compiled JavaScript output
 ├── package.json
 ├── tsconfig.json
 ├── README.md
-├── QUICKSTART.md
+├── FEATURES.md
+├── ARCHITECTURE.md
 └── demo.js              # Demo script
 ```
 
@@ -28,6 +35,7 @@ knip-html-reporter/
 ### 1. Reporter Entry Point (`src/index.ts`)
 
 The main reporter function that:
+
 - Implements Knip's `Reporter` interface
 - Receives `ReporterOptions` from Knip containing analysis results
 - Orchestrates the entire HTML generation process
@@ -56,6 +64,7 @@ const reporter: Reporter = async (options) => {
 ### 2. Configuration System (`src/config.ts`)
 
 Supports multiple configuration sources with priority:
+
 1. Command-line options (`--reporter-options`)
 2. `.knip-html-reporter.json`
 3. `knip-html-reporter.config.{js,mjs}`
@@ -67,39 +76,90 @@ Supports multiple configuration sources with priority:
 Transforms Knip's structured data into HTML:
 
 **Input**: Knip's analysis results
+
 - `issues`: Object mapping files to their issues
 - `counters`: Aggregate counts by issue type
 - `report`: Additional metadata
 
 **Output**: Complete HTML document with:
+
 - Summary dashboard
 - Issue breakdown by file
 - Detailed listings with line numbers
 - Embedded or custom styles
 
 **Key Functions**:
+
 - `generateHtml()`: Main entry point
-- `generateSummary()`: Creates summary section from counters
+- `generateSummary()`: Creates overview cards with descriptions and percentages
 - `generateIssuesSection()`: Builds file-by-file issue listings
+- `generateIssueListItem()`: Creates individual issue list items (symbol + position + IDE button)
+- `generateIdeButton()`: Creates IDE integration buttons
+- `getIssueTypeDescription()`: Returns description text for each issue type
 - `escapeHtml()`: Sanitizes output to prevent XSS
 
-### 4. Styling System (`src/styles.ts`)
+### 4. Interactive Script (`src/interactive.ts`)
+
+Provides client-side JavaScript embedded in the HTML for:
+
+**Theme Management**:
+
+- Light/dark/system theme switching
+- localStorage persistence
+- System preference detection via media queries
+
+**Filter System**:
+
+- Click-to-filter on overview cards
+- Multiple selection support
+- Visual active state indicators
+
+**Search Functionality**:
+
+- Real-time search across symbols, files, and positions
+- Granular filtering at individual issue level
+- Search query persistence during filtering
+
+**Collapsible Sections**:
+
+- Toggle file sections to hide/show issues
+- Auto-expand on search/filter matches
+
+**Key Functions**:
+
+- `initializeTheme()`: Sets up theme switcher
+- `getEffectiveTheme()`: Resolves 'system' to light/dark
+- `toggleCardFilter()`: Handles overview card clicks
+- `itemMatchesSearch()`: Searches individual issue fields
+- `applyFiltersAndSearch()`: Updates visible issues
+
+### 5. Styling System (`src/styles.ts`)
 
 Provides default CSS with:
-- Responsive design (mobile-friendly)
-- Clean, modern aesthetic
-- Color-coded issue types
+
+- **Theme System**: CSS variables for light and dark themes
+- **Responsive Design**: Mobile-friendly with breakpoints
+- **Modern Aesthetics**: Card-based UI with hover effects
+- **Interactive States**: Hover, active, and focus styles
+- **Accessibility**: Proper contrast ratios and focus indicators
+
+**Notable Components**:
+
+- Summary cards with gradient borders and progress bars
+- Theme toggle with smooth transitions
 - Monospace fonts for code/file paths
-- Accessible color contrast
+- Color-coded issue badges
 
 Can be disabled via `autoStyles: false` to use only custom CSS.
 
-### 5. Utility Functions (`src/utils.ts`)
+### 6. Utility Functions (`src/utils.ts`)
 
 **File Operations**:
+
 - `writeHtmlFile()`: Writes HTML to disk with proper path resolution
 
 **Browser Integration**:
+
 - `openInBrowser()`: Cross-platform browser opening
   - macOS: `open`
   - Windows: `start`
@@ -107,7 +167,7 @@ Can be disabled via `autoStyles: false` to use only custom CSS.
 
 ## Data Flow
 
-```
+```text
 Knip Analysis
      ↓
 Reporter Invocation (ReporterOptions)
@@ -115,15 +175,22 @@ Reporter Invocation (ReporterOptions)
 Configuration Loading
      ↓
 HTML Generation
-     ├── Summary Dashboard (counters → HTML)
-     ├── Issue Sections (issues → HTML)
-     └── Styles (CSS injection)
+     ├── Header with Theme Toggle
+     ├── Summary Cards (counters → cards with descriptions)
+     ├── Search & Filter Controls
+     ├── Issue Sections (issues → file-by-file lists)
+     ├── Interactive Script (embedded JavaScript)
+     └── Styles (CSS with theme variables)
      ↓
 File Writing
      ↓
 Optional Browser Opening
      ↓
-User views report
+User Interacts with Report
+     ├── Click cards to filter
+     ├── Search for issues
+     ├── Switch themes
+     └── Open files in IDE
 ```
 
 ## Type Safety
@@ -164,26 +231,32 @@ interface HtmlReporterConfig {
 
 To add features:
 
-1. **New Issue Types**: Update `html-generator.ts` issue type array
-2. **Custom Sections**: Add new generators in `html-generator.ts`
-3. **Styling Options**: Extend configuration and styles system
-4. **Output Formats**: Could add alongside HTML (future)
+1. **New Issue Types**: Update `getIssueTypeDescription()` in `html-generator.ts`
+2. **Custom Card Styles**: Extend CSS variables in `styles.ts`
+3. **New Interactive Features**: Add functions to `interactive.ts`
+4. **Alternative Themes**: Add new theme data attributes and CSS variables
+5. **Output Formats**: Could add alongside HTML (JSON, PDF, etc.)
 
 ## Testing Strategy
 
-Suggested test coverage:
-- Configuration loading from various sources
-- HTML generation with mock Knip data
-- File writing and path resolution
-- Cross-platform browser opening
-- Edge cases (empty results, missing files, etc.)
+Current test coverage includes:
+
+- ✅ Configuration loading from various sources
+- ✅ HTML generation with mock Knip data
+- ✅ Utility functions (file paths, escaping)
+- ✅ Interactive script generation
+- ✅ Edge cases (empty results, special characters)
+
+Tests are implemented using Vitest with 37 passing tests.
 
 ## Dependencies
 
 **Runtime**:
+
 - Knip (peer dependency)
 
 **Dev**:
+
 - TypeScript
 - Node.js types
 
@@ -192,17 +265,43 @@ Suggested test coverage:
 ## Browser Compatibility
 
 Generated HTML works in:
+
 - All modern browsers (Chrome, Firefox, Safari, Edge)
-- Older browsers with basic CSS/HTML support
-- Mobile browsers (responsive design)
+- Mobile browsers (responsive design with breakpoints)
+- Browsers with JavaScript enabled (required for interactivity)
+
+**Features requiring JavaScript**:
+
+- Theme switching
+- Search and filtering
+- Collapsible sections
+- IDE buttons
+
+**Graceful degradation**: Static HTML and CSS still viewable without JavaScript.
+
+## Current Features
+
+Implemented interactive features:
+
+- ✅ Overview cards with click-to-filter
+- ✅ Real-time search across all fields
+- ✅ Light/dark/system theme switcher
+- ✅ IDE integration (VS Code)
+- ✅ Collapsible file sections
+- ✅ Responsive mobile design
+- ✅ Issue type descriptions in cards
+- ✅ Visual progress bars and percentages
 
 ## Future Enhancements
 
 Potential additions:
-- Interactive filtering/search
-- Chart visualizations
-- Export to other formats (PDF, Markdown)
-- Historical trend tracking
-- Integration with CI/CD platforms
-- Diff view between reports
+
+- Chart visualizations (pie charts, trends)
+- Export filtered results
+- Historical comparison between reports
+- Diff view showing changes
+- Keyboard shortcuts (Ctrl+F for search, etc.)
+- Custom sorting options
+- Issue grouping by directory
+- Integration with more IDEs
 - Plugin system for custom sections

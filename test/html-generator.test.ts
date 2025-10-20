@@ -27,7 +27,7 @@ describe('HTML Generator', () => {
     nsExports: 0,
     nsTypes: 0,
     processed: 0,
-    total: 0,
+    total: 11, // 2+1+0+2+1+3+1+0+0+1 = 11
   }
 
   const mockIssues: ReporterOptions['issues'] = {
@@ -238,7 +238,7 @@ describe('HTML Generator', () => {
     expect(html).toContain('<html lang="en">')
     expect(html).toContain('</html>')
     expect(html).toContain('<head>')
-    expect(html).toContain('<body>')
+    expect(html).toContain('<body data-cwd=')
   })
 
   it('should include the report title', () => {
@@ -289,7 +289,7 @@ describe('HTML Generator', () => {
     expect(html).toContain('placeholder="Search issues')
   })
 
-  it('should include filter buttons', () => {
+  it('should include clickable summary cards for filtering', () => {
     const html = generateHtml({
       issues: mockIssues,
       counters: mockCounters,
@@ -297,8 +297,49 @@ describe('HTML Generator', () => {
       config: mockConfig,
     })
 
-    expect(html).toContain('filter-btn')
-    expect(html).toContain('data-filter="all"')
+    expect(html).toContain('summary-card')
+    expect(html).toContain('data-filter=')
+    expect(html).toContain('role="button"')
+  })
+
+  it('should display correct total and exclude internal counter keys from cards', () => {
+    const html = generateHtml({
+      issues: mockIssues,
+      counters: mockCounters,
+      report: mockReport,
+      config: mockConfig,
+    })
+
+    // Should show the correct total (11)
+    expect(html).toContain('<span class="summary-total-count">11</span>')
+
+    // Should not create cards for internal keys
+    expect(html).not.toContain('data-filter="_files"')
+    expect(html).not.toContain('data-filter="total"')
+    expect(html).not.toContain('data-filter="processed"')
+
+    // Should create cards for actual issue types
+    expect(html).toContain('data-filter="exports"')
+    expect(html).toContain('data-filter="files"')
+    expect(html).toContain('data-filter="dependencies"')
+  })
+
+  it('should calculate percentages correctly based on total', () => {
+    const html = generateHtml({
+      issues: mockIssues,
+      counters: mockCounters,
+      report: mockReport,
+      config: mockConfig,
+    })
+
+    // Exports: 3/11 = 27.3%
+    expect(html).toContain('27.3%')
+
+    // Files: 2/11 = 18.2%
+    expect(html).toContain('18.2%')
+
+    // Dependencies: 1/11 = 9.1%
+    expect(html).toContain('9.1%')
   })
 
   it('should include IDE buttons for issues with line numbers', () => {
@@ -435,8 +476,7 @@ describe('HTML Generator', () => {
       config: mockConfig,
     })
 
-    expect(html).toContain('Line 10') // line from unusedFunction
-    expect(html).toContain('Col 14') // col from unusedFunction
+    expect(html).toContain('10:14') // line:col from unusedFunction
     expect(html).toContain('position') // class name for position display
   })
 })
