@@ -70,7 +70,7 @@ The search looks through:
 - **File paths**: Full path including directory structure
 - **Line positions**: Line and column numbers (e.g., "10:14")
 
-### How to Use
+### Using Search
 
 1. Click or focus on the search input at the top of the report
 2. Start typing (e.g., "unused", "src/", "Component")
@@ -121,24 +121,24 @@ To use with other IDEs, you can modify the protocol in the generated HTML:
 
 Or configure your IDE to handle the `vscode://` protocol.
 
-## Collapsible Sections
+## Table Layout
 
-### Toggle File Sections
+### Category-Based Organization
 
-Click any file name to collapse/expand its issues:
+Issues are organized by category (issue type) rather than by file, making it easier to focus on specific problem types:
 
-- **Collapsed**: Hides all issues for that file
-- **Expanded**: Shows all issues (default)
+- **Clear categorization**: Each issue type has its own section with a descriptive header
+- **Table format**: Issues displayed in clean, scannable tables
+- **Name column**: Shows the symbol or dependency name
+- **Location column**: Shows file path and line:column position
+- **Actions column**: Quick access to IDE buttons
 
 ### When to Use
 
-- Quickly scan file names without seeing all details
-- Focus on specific files by collapsing others
-- Navigate large reports more efficiently
-
-### Auto-Expand on Filter/Search
-
-When you search or filter, collapsed sections automatically expand if they contain matching results.
+- Focus on a specific type of issue across your entire codebase
+- See all unused exports, dependencies, or other issues at a glance
+- Compare similar issues side-by-side in a structured format
+- Quickly navigate between different issue categories
 
 ## Interactive States
 

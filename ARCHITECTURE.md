@@ -84,7 +84,8 @@ Transforms Knip's structured data into HTML:
 **Output**: Complete HTML document with:
 
 - Summary dashboard
-- Issue breakdown by file
+- Issue breakdown by category (issue type)
+- Table-based layout with Name and Location columns
 - Detailed listings with line numbers
 - Embedded or custom styles
 
@@ -92,8 +93,8 @@ Transforms Knip's structured data into HTML:
 
 - `generateHtml()`: Main entry point
 - `generateSummary()`: Creates overview cards with descriptions and percentages
-- `generateIssuesSection()`: Builds file-by-file issue listings
-- `generateIssueListItem()`: Creates individual issue list items (symbol + position + IDE button)
+- `generateIssuesSection()`: Builds category-based issue tables
+- `generateIssueTableRow()`: Creates individual table rows (name, location, actions)
 - `generateIdeButton()`: Creates IDE integration buttons
 - `getIssueTypeDescription()`: Returns description text for each issue type
 - `escapeHtml()`: Sanitizes output to prevent XSS
@@ -117,21 +118,16 @@ Provides client-side JavaScript embedded in the HTML for:
 **Search Functionality**:
 
 - Real-time search across symbols, files, and positions
-- Granular filtering at individual issue level
+- Granular filtering at individual issue level (table rows)
 - Search query persistence during filtering
-
-**Collapsible Sections**:
-
-- Toggle file sections to hide/show issues
-- Auto-expand on search/filter matches
 
 **Key Functions**:
 
 - `initializeTheme()`: Sets up theme switcher
 - `getEffectiveTheme()`: Resolves 'system' to light/dark
 - `toggleCardFilter()`: Handles overview card clicks
-- `itemMatchesSearch()`: Searches individual issue fields
-- `applyFiltersAndSearch()`: Updates visible issues
+- `rowMatchesSearch()`: Searches individual table row fields
+- `applyFiltersAndSearch()`: Updates visible categories and table rows
 
 ### 5. Styling System (`src/styles.ts`)
 
@@ -149,6 +145,8 @@ Provides default CSS with:
 - Theme toggle with smooth transitions
 - Monospace fonts for code/file paths
 - Color-coded issue badges
+- Table styling with hover states and proper spacing
+- Responsive table layout for mobile devices
 
 Can be disabled via `autoStyles: false` to use only custom CSS.
 
@@ -178,7 +176,7 @@ HTML Generation
      ├── Header with Theme Toggle
      ├── Summary Cards (counters → cards with descriptions)
      ├── Search & Filter Controls
-     ├── Issue Sections (issues → file-by-file lists)
+     ├── Issue Sections (issues → category-based tables)
      ├── Interactive Script (embedded JavaScript)
      └── Styles (CSS with theme variables)
      ↓
@@ -287,10 +285,11 @@ Implemented interactive features:
 - ✅ Real-time search across all fields
 - ✅ Light/dark/system theme switcher
 - ✅ IDE integration (VS Code)
-- ✅ Collapsible file sections
+- ✅ Category-based table layout
 - ✅ Responsive mobile design
 - ✅ Issue type descriptions in cards
 - ✅ Visual progress bars and percentages
+- ✅ Separate Name and Location columns
 
 ## Future Enhancements
 

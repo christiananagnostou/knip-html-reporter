@@ -21,7 +21,6 @@ export function getInteractiveScript(): string {
     initializeTheme();
     initializeFilters();
     initializeSearch();
-    initializeCollapsible();
     collectIssueTypes();
   });
   
@@ -99,10 +98,10 @@ export function getInteractiveScript(): string {
    * Collect all unique issue types from the page
    */
   function collectIssueTypes() {
-    const issueTypeElements = document.querySelectorAll('.issue-type');
-    issueTypeElements.forEach(el => {
-      const heading = el.querySelector('h4');
-      if (heading) state.allIssueTypes.add(heading.textContent.trim());
+    const categorySections = document.querySelectorAll('.category-section');
+    categorySections.forEach(el => {
+      const category = el.dataset.category;
+      if (category) state.allIssueTypes.add(category);
     });
   }
   
@@ -177,82 +176,50 @@ export function getInteractiveScript(): string {
   }
   
   /**
-   * Initialize collapsible sections
-   */
-  function initializeCollapsible() {
-    const fileSections = document.querySelectorAll('.file-section');
-    
-    fileSections.forEach(section => {
-      const fileName = section.querySelector('.file-name');
-      if (fileName) {
-        fileName.style.cursor = 'pointer';
-        fileName.addEventListener('click', function(e) {
-          section.classList.toggle('collapsed');
-        });
-      }
-    });
-  }
-  
-  /**
    * Apply both filters and search
    */
   function applyFiltersAndSearch() {
-    const fileSections = document.querySelectorAll('.file-section');
+    const categorySections = document.querySelectorAll('.category-section');
     let visibleSections = 0;
     
-    fileSections.forEach(section => {
-      let sectionVisible = false;
-      const issueTypes = section.querySelectorAll('.issue-type');
+    categorySections.forEach(section => {
+      const category = section.dataset.category;
       
-      issueTypes.forEach(issueType => {
-        const heading = issueType.querySelector('h4');
-        const issueTypeName = heading ? heading.textContent.trim() : '';
-        
-        // Check if this issue type should be visible based on filters
-        const passesFilter = state.activeFilters.size === 0 || 
-                            state.activeFilters.has(issueTypeName.toLowerCase());
-        
-        if (!passesFilter) {
-          issueType.style.display = 'none';
-          return;
-        }
-        
-        // If no search query, show the entire issue type
-        if (!state.searchQuery) {
-          issueType.style.display = 'block';
-          sectionVisible = true;
-          // Reset all list items to visible
-          const items = issueType.querySelectorAll('li');
-          items.forEach(item => item.style.display = '');
-          return;
-        }
-        
-        // Search at the individual issue (list item) level
-        const items = issueType.querySelectorAll('li');
-        let visibleItemsCount = 0;
-        
-        items.forEach(item => {
-          if (itemMatchesSearch(item)) {
-            item.style.display = '';
-            visibleItemsCount++;
-          } else {
-            item.style.display = 'none';
-          }
-        });
-        
-        // Show issue type if it has visible items
-        if (visibleItemsCount > 0) {
-          issueType.style.display = 'block';
-          sectionVisible = true;
+      // Check if this category should be visible based on filters
+      const passesFilter = state.activeFilters.size === 0 || 
+                          state.activeFilters.has(category);
+      
+      if (!passesFilter) {
+        section.style.display = 'none';
+        return;
+      }
+      
+      // If no search query, show the entire category
+      if (!state.searchQuery) {
+        section.style.display = 'block';
+        visibleSections++;
+        // Reset all table rows to visible
+        const rows = section.querySelectorAll('tbody tr');
+        rows.forEach(row => row.style.display = '');
+        return;
+      }
+      
+      // Search at the individual issue (table row) level
+      const rows = section.querySelectorAll('tbody tr');
+      let visibleRowsCount = 0;
+      
+      rows.forEach(row => {
+        if (rowMatchesSearch(row)) {
+          row.style.display = '';
+          visibleRowsCount++;
         } else {
-          issueType.style.display = 'none';
+          row.style.display = 'none';
         }
       });
       
-      // Show/hide entire file section
-      if (sectionVisible) {
+      // Show category if it has visible rows
+      if (visibleRowsCount > 0) {
         section.style.display = 'block';
-        section.classList.remove('collapsed');
         visibleSections++;
       } else {
         section.style.display = 'none';
@@ -264,21 +231,18 @@ export function getInteractiveScript(): string {
   }
   
   /**
-   * Check if a list item matches the search query
+   * Check if a table row matches the search query
    */
-  function itemMatchesSearch(item) {
+  function rowMatchesSearch(row) {
     if (!state.searchQuery) return true;
     
-    // Get all searchable text from the item
-    const symbol = item.querySelector('.symbol')?.textContent || '';
-    const position = item.querySelector('.position')?.textContent || '';
-    
-    // Get file path from parent section
-    const fileSection = item.closest('.file-section');
-    const filePath = fileSection?.querySelector('.file-name span')?.textContent || '';
+    // Get all searchable text from the row
+    const symbol = row.querySelector('.symbol')?.textContent || '';
+    const filePath = row.querySelector('.file-path')?.textContent || '';
+    const position = row.querySelector('.position')?.textContent || '';
     
     // Combine all searchable fields
-    const searchableText = (symbol + ' ' + position + ' ' + filePath).toLowerCase();
+    const searchableText = (symbol + ' ' + filePath + ' ' + position).toLowerCase();
     
     return searchableText.includes(state.searchQuery);
   }
@@ -339,5 +303,5 @@ export function getInteractiveScript(): string {
   
 })();
 </script>
-  `
+  `;
 }

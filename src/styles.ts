@@ -265,7 +265,7 @@ export function getDefaultStyles(): string {
     }
     
     .summary-total-count {
-      font-size: 2rem;
+      font-size: 1.5rem;
       font-weight: 800;
       color: white;
       line-height: 1;
@@ -497,82 +497,47 @@ export function getDefaultStyles(): string {
       margin-top: 0;
     }
     
-    .file-section {
-      margin: 24px 0;
+    .category-section {
+      margin: 32px 0;
       padding: 0;
       background: transparent;
       border-radius: 0;
       border: none;
       border-top: 1px solid var(--border-primary);
-      padding-top: 24px;
+      padding-top: 32px;
     }
     
-    .file-section:first-of-type {
+    .category-section:first-of-type {
       border-top: none;
       padding-top: 0;
     }
     
-    .file-name {
-      font-family: var(--font-mono);
-      color: var(--text-primary);
-      background: transparent;
-      padding: 12px 0;
-      border-radius: 0;
-      margin-bottom: 16px;
+    .category-header {
+      margin-bottom: 20px;
+    }
+    
+    .category-header h3 {
       display: flex;
       align-items: center;
-      cursor: pointer;
-      user-select: none;
-      font-size: 0.9375rem;
-      font-weight: 500;
-      transition: all 0.15s ease;
-      gap: 8px;
-    }
-    
-    .file-name span {
-      flex: 1;
-    }
-    
-    .file-name:hover {
-      color: var(--accent-primary);
-      background: transparent;
-    }
-    
-    .file-name::after {
-      content: '›';
+      gap: 12px;
+      margin-bottom: 8px;
       font-size: 1.25rem;
-      transition: transform 0.2s ease;
-      transform: rotate(90deg);
-      color: var(--text-tertiary);
-      font-weight: 400;
-      flex-shrink: 0;
+      font-weight: 600;
+      color: var(--text-primary);
     }
     
-    .file-section.collapsed .file-name::after {
-      transform: rotate(0deg);
-    }
-    
-    .issue-type {
-      margin: 20px 0;
-      padding: 0;
-      background: transparent;
-      border-radius: 0;
-    }
-    
-    .issue-type h4 {
-      color: var(--text-tertiary);
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .category-description {
+      color: var(--text-secondary);
+      font-size: 0.9375rem;
+      margin: 0;
     }
     
     .issue-badge {
       display: inline-flex;
       align-items: center;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.8125rem;
       font-weight: 600;
       background: var(--error-bg);
       color: var(--error-primary);
@@ -580,53 +545,95 @@ export function getDefaultStyles(): string {
       letter-spacing: 0.03em;
     }
     
-    ul {
-      list-style: none;
-      padding-left: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+    .issue-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      min-width: 32px;
     }
     
-    li {
-      padding: 12px 16px;
-      margin: 0;
-      background: var(--bg-secondary);
+    /* ===== Table Styles ===== */
+    .table-container {
+      overflow-x: auto;
       border: 1px solid var(--border-primary);
       border-radius: var(--radius-md);
-      font-family: var(--font-mono);
-      font-size: 0.875rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      transition: all 0.15s ease;
+      background: var(--bg-secondary);
     }
     
-    li:hover {
-      border-color: var(--border-hover);
+    .issues-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+    
+    .issues-table thead {
+      background: var(--bg-tertiary);
+      border-bottom: 1px solid var(--border-primary);
+    }
+    
+    .issues-table th {
+      text-align: left;
+      padding: 12px 16px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      font-size: 0.8125rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+    
+    .issues-table tbody tr {
+      border-bottom: 1px solid var(--border-primary);
+      transition: background 0.15s ease;
+    }
+    
+    .issues-table tbody tr:last-child {
+      border-bottom: none;
+    }
+    
+    .issues-table tbody tr:hover {
       background: var(--bg-hover);
     }
     
-    .issue-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex: 1;
-      min-width: 0;
+    .issues-table td {
+      padding: 12px 16px;
+      color: var(--text-primary);
+      vertical-align: middle;
     }
     
-    .issue-details {
+    .issue-name {
+      font-family: var(--font-mono);
+      font-weight: 500;
+    }
+    
+    .issue-name .symbol {
+      color: var(--text-primary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+      max-width: 400px;
+    }
+    
+    .issue-location {
+      font-family: var(--font-mono);
+      min-width: 200px;
+    }
+    
+    .location-content {
       display: flex;
       flex-direction: column;
       gap: 4px;
-      flex: 1;
-      min-width: 0;
     }
     
-    .symbol {
-      color: var(--text-primary);
-      font-weight: 500;
+    .file-path {
+      color: var(--text-secondary);
+      font-size: 0.8125rem;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -634,27 +641,14 @@ export function getDefaultStyles(): string {
     
     .position {
       color: var(--text-tertiary);
-      font-size: 0.8125rem;
-      white-space: nowrap;
+      font-size: 0.75rem;
       font-weight: 400;
       font-variant-numeric: tabular-nums;
     }
     
-    .location {
-      color: var(--text-tertiary);
-      font-size: 0.8125rem;
-    }
-    
-    .sub-section {
-      margin: 16px 0;
-      padding-left: 0;
-    }
-    
-    .sub-section strong {
-      display: block;
-      margin-bottom: 8px;
-      color: var(--text-secondary);
-      font-weight: 500;
+    .issue-actions {
+      width: 60px;
+      text-align: center;
     }
     
     /* ===== IDE Buttons ===== */
@@ -701,11 +695,6 @@ export function getDefaultStyles(): string {
     .ide-btn-inline:hover {
       background: var(--accent-light);
       color: var(--accent-primary);
-    }
-    
-    /* ===== Collapsible file sections ===== */
-    .file-section.collapsed .issue-type {
-      display: none;
     }
     
     /* ===== No results message ===== */
@@ -776,31 +765,37 @@ export function getDefaultStyles(): string {
         padding: 24px 20px 60px;
       }
       
-      .file-name {
-        font-size: 0.875rem;
+      .category-header h3 {
+        font-size: 1.125rem;
       }
       
-      li {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
+      .issues-table {
+        font-size: 0.8125rem;
+      }
+      
+      .issues-table th,
+      .issues-table td {
         padding: 10px 12px;
       }
       
-      .issue-info {
-        width: 100%;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 4px;
+      .issue-name .symbol {
+        max-width: 200px;
       }
       
-      .symbol {
-        word-break: break-all;
-        white-space: normal;
+      .issue-location {
+        min-width: 150px;
+      }
+      
+      .file-path {
+        font-size: 0.75rem;
+      }
+      
+      .issue-actions {
+        width: 50px;
       }
       
       .ide-btn-inline {
-        align-self: flex-end;
+        padding: 4px 6px;
       }
     }
     
@@ -811,5 +806,5 @@ export function getDefaultStyles(): string {
         transition-duration: 0.01ms !important;
       }
     }
-  `
+  `;
 }
