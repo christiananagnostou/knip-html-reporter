@@ -98,11 +98,11 @@ Example: Click "Exports" card, then search for "src/hooks" to see only unused ex
 
 ### Open Files Directly
 
-Each issue has a ⚡ button to open it directly in your IDE at the exact line and column.
+Each issue has a button to open it directly in your IDE at the exact line and column.
 
 ### How It Works
 
-1. Click any ⚡ button next to an issue
+1. Click the button next to an issue
 2. The file opens in VS Code (or your configured editor)
 3. The cursor jumps to the exact line and column of the issue
 

@@ -24,11 +24,6 @@ describe('Interactive Script', () => {
     expect(script).toContain('vscode://file/')
   })
 
-  it('should contain collapsible section logic', () => {
-    expect(script).toContain('collapsible')
-    expect(script).toContain('addEventListener')
-  })
-
   it('should initialize on DOM ready', () => {
     expect(script).toContain('DOMContentLoaded')
     expect(script).toContain('initializeSearch()')

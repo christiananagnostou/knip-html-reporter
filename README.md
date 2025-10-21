@@ -101,7 +101,7 @@ Toggle between light, dark, or system theme. Your preference is saved in localSt
 
 ### IDE Integration
 
-Click the ⚡ button next to any issue to:
+Click the arrow button next to any issue to:
 
 - Open the file in VS Code
 - Jump to the exact line and column

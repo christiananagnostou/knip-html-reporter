@@ -272,7 +272,6 @@ Generated HTML works in:
 
 - Theme switching
 - Search and filtering
-- Collapsible sections
 - IDE buttons
 
 **Graceful degradation**: Static HTML and CSS still viewable without JavaScript.
