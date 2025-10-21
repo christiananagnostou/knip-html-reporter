@@ -806,5 +806,5 @@ export function getDefaultStyles(): string {
         transition-duration: 0.01ms !important;
       }
     }
-  `;
+  `
 }

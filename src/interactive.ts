@@ -303,5 +303,5 @@ export function getInteractiveScript(): string {
   
 })();
 </script>
-  `;
+  `
 }
