@@ -22,7 +22,7 @@ Thank you for your interest in contributing! This document provides guidelines a
 1. **Fork and clone the repository**
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/knip-html.git
+git clone https://github.com/YOUR_USERNAME/knip-html-reporter.git
 cd knip-html-reporter
 ```
 
@@ -263,7 +263,7 @@ The repository uses Release Drafter to automatically generate draft releases:
 
 To use:
 
-1. Check the [Releases page](https://github.com/christiananagnostou/knip-html/releases)
+1. Check the [Releases page](https://github.com/christiananagnostou/knip-html-reporter/releases)
 2. Review the draft release
 3. Edit as needed
 4. Publish when ready
@@ -294,8 +294,8 @@ npm version patch  # Creates 0.3.1
 
 ## Questions?
 
-- Open a [Discussion](https://github.com/christiananagnostou/knip-html/discussions)
-- Report bugs via [Issues](https://github.com/christiananagnostou/knip-html/issues)
+- Open a [Discussion](https://github.com/christiananagnostou/knip-html-reporter/discussions)
+- Report bugs via [Issues](https://github.com/christiananagnostou/knip-html-reporter/issues)
 - Contact the maintainer
 
 ## License

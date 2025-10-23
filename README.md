@@ -2,7 +2,7 @@
 
 > A beautiful, interactive HTML reporter for [Knip](https://knip.dev) that transforms analysis results into easy-to-navigate reports.
 
-[![CI](https://github.com/christiananagnostou/knip-html/actions/workflows/ci.yml/badge.svg)](https://github.com/christiananagnostou/knip-html/actions/workflows/ci.yml)
+[![CI](https://github.com/christiananagnostou/knip-html-reporter/actions/workflows/ci.yml/badge.svg)](https://github.com/christiananagnostou/knip-html-reporter/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/knip-html-reporter.svg)](https://www.npmjs.com/package/knip-html-reporter)
 
 ## Features

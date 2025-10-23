@@ -40,11 +40,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/christiananagnostou/knip-html.git"
+    "url": "git+https://github.com/christiananagnostou/knip-html-reporter.git"
   },
-  "homepage": "https://github.com/christiananagnostou/knip-html#readme",
+  "homepage": "https://github.com/christiananagnostou/knip-html-reporter#readme",
   "bugs": {
-    "url": "https://github.com/christiananagnostou/knip-html/issues"
+    "url": "https://github.com/christiananagnostou/knip-html-reporter/issues"
   },
   "peerDependencies": {
     "knip": ">=5.1.0"
