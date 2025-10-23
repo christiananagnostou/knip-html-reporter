@@ -10,10 +10,10 @@
 - **Search** - Instantly filter issues across symbols, files, and line numbers
 - **Filtering** - Click overview cards to filter by issue type
 - **IDE Integration** - Open files directly in VS Code at exact line and column
-- **Dark/Light Themes** - System-aware theme with manual override
 - **Customizable** - Use default styles or provide your own CSS
-- **Responsive** - Works great on desktop and mobile
 - **Zero Dependencies** - Fast, lightweight, works offline
+
+See [FEATURES.md](./FEATURES.md) for detailed documentation.
 
 ## Installation
 
@@ -77,39 +77,6 @@ Pass options via `--reporter-options`:
 npx knip --reporter knip-html-reporter \
   --reporter-options '{"output":"docs/report.html","autoOpen":true,"title":"My Report"}'
 ```
-
-## Interactive Features
-
-### Overview Cards
-
-Click any overview card to filter issues by that type. Cards show:
-
-- Issue count and percentage
-- Descriptive explanation of the issue type
-- Visual progress bar
-
-### Search
-
-Type in the search box to instantly filter by:
-
-- Symbol names
-- File paths
-- Line/column positions
-
-### Theme Switcher
-
-Toggle between light, dark, or system theme. Your preference is saved in localStorage.
-
-### IDE Integration
-
-Click the arrow button next to any issue to:
-
-- Open the file in VS Code
-- Jump to the exact line and column
-
-Works with VS Code out of the box. Configurable for other IDEs.
-
-See [FEATURES.md](./FEATURES.md) for detailed documentation.
 
 ## Use with Multiple Reporters
 
