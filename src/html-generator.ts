@@ -1,5 +1,5 @@
 import type { ReporterOptions } from 'knip'
-import type { Issues, Issue, IssueType } from 'knip/dist/types/issues.js'
+import type { Issues, Issue } from 'knip/dist/types/issues.js'
 import type { HtmlReporterConfig } from './types.js'
 import { getDefaultStyles } from './styles.js'
 import { getInteractiveScript } from './interactive.js'
@@ -16,24 +16,42 @@ const THEME_ICONS = {
 interface GenerateHtmlOptions {
   issues: ReporterOptions['issues']
   counters: ReporterOptions['counters']
-  report: ReporterOptions['report']
   config: Required<Omit<HtmlReporterConfig, 'customStyles'>> & Pick<HtmlReporterConfig, 'customStyles'>
+  cwd: string
+}
+
+/** Utility: make a file path relative to cwd (without leading slash) */
+function toRelativePath(filePath: string, cwd: string): string {
+  return filePath.startsWith(cwd) ? filePath.slice(cwd.length).replace(/^\//, '') : filePath
 }
 
 /**
  * Generate a single issue table row
  */
-function generateIssueTableRow(symbol: string, issue: Issue, filePath: string): string {
+function generateIssueTableRow(
+  symbol: string,
+  issue: Issue,
+  filePath: string,
+  cwd: string,
+  isFileIssue = false
+): string {
   const line = issue.line ?? 1
   const col = issue.col ?? 1
+  const relativePath = toRelativePath(filePath, cwd)
+  const symbolType = issue.symbolType ? ` <span class="symbol-type">${issue.symbolType}</span>` : ''
+
+  const locationContent = isFileIssue
+    ? `<span class="file-path">${escapeHtml(relativePath)}</span>`
+    : `<span class="file-path">${escapeHtml(relativePath)}</span>
+        <span class="position">${line}:${col}</span>`
+
   return /* html */ `<tr>
     <td class="issue-name">
-      <span class="symbol">${escapeHtml(symbol)}</span>
+      <span class="symbol">${escapeHtml(symbol)}${symbolType}</span>
     </td>
     <td class="issue-location">
       <div class="location-content">
-        <span class="file-path">${escapeHtml(filePath)}</span>
-        <span class="position">${line}:${col}</span>
+        ${locationContent}
       </div>
     </td>
     <td class="issue-actions">
@@ -59,12 +77,12 @@ function generateIdeButton(filePath: string, line: number, col: number): string 
  * Generate HTML report from Knip results
  */
 export function generateHtml(options: GenerateHtmlOptions): string {
-  const { issues, counters, report, config } = options
+  const { issues, counters, config, cwd } = options
 
   const styles = getStyles(config)
   const summary = generateSummary(counters)
-  const controls = generateControls(counters)
-  const issuesHtml = generateIssuesSection(issues, report, config)
+  const controls = generateControls()
+  const issuesHtml = generateIssuesSection(issues, cwd)
   const script = getInteractiveScript()
 
   return /* html */ `<!DOCTYPE html>
@@ -89,7 +107,7 @@ export function generateHtml(options: GenerateHtmlOptions): string {
   </script>
   ${styles}
 </head>
-<body data-cwd="${escapeHtml(process.cwd())}">
+<body data-cwd="${escapeHtml(cwd)}">
   <div class="container">
     <header>
       <div class="header-content">
@@ -135,7 +153,7 @@ function getStyles(config: GenerateHtmlOptions['config']): string {
     try {
       const customCss = readFileSync(resolve(config.customStyles), 'utf-8')
       styles += `<style>${customCss}</style>`
-    } catch (error) {
+    } catch {
       console.warn(`Warning: Could not load custom styles from ${config.customStyles}`)
     }
   }
@@ -146,7 +164,7 @@ function getStyles(config: GenerateHtmlOptions['config']): string {
 /**
  * Generate controls (search and filters)
  */
-function generateControls(counters: ReporterOptions['counters']): string {
+function generateControls(): string {
   return /* html */ `
     <div class="controls">
       <div class="search-container">
@@ -166,13 +184,11 @@ function generateControls(counters: ReporterOptions['counters']): string {
  * Generate summary section with counters
  */
 function generateSummary(counters: ReporterOptions['counters']): string {
-  // Filter out non-issue counter keys (internal/metadata keys)
-  const excludedKeys = ['_files', 'processed', 'total']
+  const EXCLUDED_KEYS = ['_files', 'processed', 'total'] as const
 
-  // Calculate total from actual issue type counters only
   const total = Object.entries(counters)
-    .filter(([key]) => !excludedKeys.includes(key))
-    .reduce((sum: number, [, count]) => sum + (count as number), 0)
+    .filter(([key]) => !EXCLUDED_KEYS.includes(key as (typeof EXCLUDED_KEYS)[number]))
+    .reduce((sum, [, count]) => sum + (count as number), 0)
 
   if (total === 0) {
     return /* html */ `
@@ -189,15 +205,14 @@ function generateSummary(counters: ReporterOptions['counters']): string {
     `
   }
 
-  // Calculate percentages for each issue type
   const issueData = Object.entries(counters)
-    .filter(([key, count]) => !excludedKeys.includes(key) && (count as number) > 0)
+    .filter(([key, count]) => !EXCLUDED_KEYS.includes(key as any) && (count as number) > 0)
     .map(([type, count]) => ({
       type,
       count: count as number,
       percentage: ((count as number) / total) * 100,
     }))
-    .sort((a, b) => b.count - a.count) // Sort by count descending
+    .sort((a, b) => b.count - a.count)
 
   const items = issueData
     .map(
@@ -245,45 +260,45 @@ function generateSummary(counters: ReporterOptions['counters']): string {
 /**
  * Generate issues section organized by category
  */
-function generateIssuesSection(
-  issues: ReporterOptions['issues'],
-  report: ReporterOptions['report'],
-  config: GenerateHtmlOptions['config']
-): string {
-  // Collect all issues by category
-  const categorizedIssues: Map<string, Array<{ symbol: string; issue: Issue; filePath: string }>> = new Map()
+function generateIssuesSection(issues: ReporterOptions['issues'], cwd: string): string {
+  const categorizedIssues = new Map<string, Array<{ symbol: string; issue: Issue; filePath: string }>>()
 
   // Handle unused files
   if (issues.files && issues.files.size > 0) {
     const filesArray = Array.from(issues.files)
     categorizedIssues.set(
       'files',
-      filesArray.map((file: string) => ({
-        symbol: file,
-        issue: {
-          type: 'files' as any,
-          symbol: file,
+      filesArray.map((file) => {
+        const relativeFile = toRelativePath(file, cwd)
+        return {
+          symbol: relativeFile,
+          issue: {
+            type: 'files' as any,
+            symbol: relativeFile,
+            filePath: file,
+            workspace: '.',
+            line: 1,
+            col: 1,
+          },
           filePath: file,
-          workspace: '.',
-          line: 1,
-          col: 1,
-        },
-        filePath: file,
-      }))
+        }
+      })
     )
   }
 
-  // Handle issues from _files (these are general issues organized by file in Knip's structure)
+  // Helper to push into map
+  const pushIssue = (categoryKey: string, payload: { symbol: string; issue: Issue; filePath: string }) => {
+    if (!categorizedIssues.has(categoryKey)) categorizedIssues.set(categoryKey, [])
+    categorizedIssues.get(categoryKey)!.push(payload)
+  }
+
+  // Handle issues from _files
   if (issues._files && Object.keys(issues._files).length > 0) {
-    Object.entries(issues._files).forEach(([file, fileIssues]) => {
-      Object.entries(fileIssues).forEach(([symbol, issue]) => {
-        const categoryKey = issue.type || 'unknown'
-        if (!categorizedIssues.has(categoryKey)) {
-          categorizedIssues.set(categoryKey, [])
-        }
-        categorizedIssues.get(categoryKey)!.push({ symbol, issue, filePath: file })
-      })
-    })
+    for (const [file, fileIssues] of Object.entries(issues._files)) {
+      for (const [symbol, issue] of Object.entries(fileIssues)) {
+        pushIssue(issue.type || 'unknown', { symbol, issue, filePath: file })
+      }
+    }
   }
 
   // Process other issue types
@@ -303,31 +318,27 @@ function generateIssuesSection(
     'classMembers',
   ]
 
-  issueTypes.forEach((issueType) => {
+  for (const issueType of issueTypes) {
     const issueRecords = issues[issueType]
     if (issueRecords && Object.keys(issueRecords).length > 0) {
-      Object.entries(issueRecords).forEach(([file, symbolIssues]) => {
-        Object.entries(symbolIssues).forEach(([symbol, issue]) => {
-          if (!categorizedIssues.has(issueType)) {
-            categorizedIssues.set(issueType, [])
-          }
-          categorizedIssues.get(issueType)!.push({ symbol, issue: issue as Issue, filePath: file })
-        })
-      })
+      for (const [file, symbolIssues] of Object.entries(issueRecords)) {
+        for (const [symbol, issue] of Object.entries(symbolIssues)) {
+          pushIssue(issueType, { symbol, issue: issue as Issue, filePath: file })
+        }
+      }
     }
-  })
-
-  if (categorizedIssues.size === 0) {
-    return ''
   }
+
+  if (categorizedIssues.size === 0) return ''
 
   // Generate category sections with tables
   const sections = Array.from(categorizedIssues.entries())
     .map(([category, issueList]) => {
       const title = formatIssueType(category)
       const description = getIssueTypeDescription(category)
+      const isFileCategory = category === 'files'
       const rows = issueList
-        .map(({ symbol, issue, filePath }) => generateIssueTableRow(symbol, issue, filePath))
+        .map(({ symbol, issue, filePath }) => generateIssueTableRow(symbol, issue, filePath, cwd, isFileCategory))
         .join('')
 
       return /* html */ `
@@ -370,12 +381,10 @@ function generateIssuesSection(
  * Format issue type name for display
  */
 function formatIssueType(type: string): string {
-  const formatted = type
+  return type
     .replace(/([A-Z])/g, ' $1')
     .replace(/^./, (str) => str.toUpperCase())
     .trim()
-
-  return formatted
 }
 
 /**
@@ -396,6 +405,7 @@ function getIssueTypeDescription(type: string): string {
     duplicates: 'Duplicate export',
     enumMembers: 'Enum member is unused',
     classMembers: 'Class member is unused',
+    files: 'Unused file',
   }
 
   return descriptions[type] || 'Unused'

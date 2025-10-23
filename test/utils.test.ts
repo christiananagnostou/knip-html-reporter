@@ -62,14 +62,72 @@ describe('Utils', () => {
   })
 
   describe('openInBrowser', () => {
-    it('should call exec with correct command', async () => {
+    it('should call exec with correct command on macOS', async () => {
       const html = '<html><body>Test Report</body></html>'
       const fullPath = await writeHtmlFile(html, 'test.html', TEST_DIR)
 
+      // Mock platform to return darwin
+      const originalPlatform = process.platform
+      Object.defineProperty(process, 'platform', { value: 'darwin' })
+
       await openInBrowser(fullPath)
 
-      // Verify exec was called (but mocked, so no actual browser opens)
-      expect(exec).toHaveBeenCalled()
+      // Verify exec was called with macOS open command
+      expect(exec).toHaveBeenCalledWith(expect.stringContaining('open'), expect.any(Function))
+
+      // Restore original platform
+      Object.defineProperty(process, 'platform', { value: originalPlatform })
+    })
+
+    it('should use correct command for Windows', async () => {
+      vi.clearAllMocks()
+      const html = '<html><body>Test</body></html>'
+      const fullPath = await writeHtmlFile(html, 'test-win.html', TEST_DIR)
+
+      // Mock platform to return win32
+      const originalPlatform = process.platform
+      Object.defineProperty(process, 'platform', { value: 'win32' })
+
+      await openInBrowser(fullPath)
+
+      // Verify exec was called with Windows start command
+      expect(exec).toHaveBeenCalledWith(expect.stringContaining('start'), expect.any(Function))
+
+      // Restore original platform
+      Object.defineProperty(process, 'platform', { value: originalPlatform })
+    })
+
+    it('should use correct command for Linux', async () => {
+      vi.clearAllMocks()
+      const html = '<html><body>Test</body></html>'
+      const fullPath = await writeHtmlFile(html, 'test-linux.html', TEST_DIR)
+
+      // Mock platform to return linux
+      const originalPlatform = process.platform
+      Object.defineProperty(process, 'platform', { value: 'linux' })
+
+      await openInBrowser(fullPath)
+
+      // Verify exec was called with Linux xdg-open command
+      expect(exec).toHaveBeenCalledWith(expect.stringContaining('xdg-open'), expect.any(Function))
+
+      // Restore original platform
+      Object.defineProperty(process, 'platform', { value: originalPlatform })
+    })
+
+    it('should handle exec errors gracefully', async () => {
+      // Mock exec to return an error
+      const execMock = vi.mocked(exec)
+      execMock.mockImplementationOnce((cmd: any, callback: any) => {
+        if (callback) callback(new Error('Failed to open browser'), '', '')
+        return {} as any
+      })
+
+      const html = '<html><body>Test</body></html>'
+      const fullPath = await writeHtmlFile(html, 'test-error.html', TEST_DIR)
+
+      // Should throw the error
+      await expect(openInBrowser(fullPath)).rejects.toThrow('Failed to open browser')
     })
 
     it('should not throw when given a valid path', async () => {

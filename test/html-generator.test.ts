@@ -1,174 +1,23 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { generateHtml } from '../src/html-generator.js'
-import type { ReporterOptions } from 'knip'
+import {
+  mockConfig,
+  mockCounters,
+  mockIssues,
+  createEmptyCounters,
+  createEmptyIssues,
+  createIssuesWithFiles,
+  createCounters,
+  createConfig,
+} from './fixtures.js'
 
 describe('HTML Generator', () => {
-  const mockConfig = {
-    output: 'test-report.html',
-    autoStyles: true,
-    autoOpen: false,
-    title: 'Test Report',
-  }
-
-  const mockCounters: ReporterOptions['counters'] = {
-    files: 2,
-    dependencies: 1,
-    devDependencies: 0,
-    unlisted: 2,
-    unresolved: 1,
-    exports: 3,
-    types: 1,
-    duplicates: 0,
-    enumMembers: 0,
-    classMembers: 1,
-    _files: 0,
-    optionalPeerDependencies: 0,
-    binaries: 0,
-    nsExports: 0,
-    nsTypes: 0,
-    processed: 0,
-    total: 11, // 2+1+0+2+1+3+1+0+0+1 = 11
-  }
-
-  const mockIssues: ReporterOptions['issues'] = {
-    files: new Set(),
-    _files: {
-      'src/index.ts': {
-        unusedFunction: {
-          type: 'exports',
-          symbol: 'unusedFunction',
-          filePath: 'src/index.ts',
-          workspace: '.',
-          line: 10,
-          col: 14,
-          pos: 156,
-        },
-        unusedHelper: {
-          type: 'exports',
-          symbol: 'unusedHelper',
-          filePath: 'src/index.ts',
-          workspace: '.',
-          line: 25,
-          col: 14,
-          pos: 402,
-        },
-      },
-    },
-    dependencies: {
-      'package.json': {
-        'unused-package': {
-          type: 'dependencies',
-          symbol: 'unused-package',
-          filePath: 'package.json',
-          workspace: '.',
-          line: 12,
-          col: 5,
-          pos: 234,
-        },
-      },
-    },
-    devDependencies: {},
-    optionalPeerDependencies: {},
-    unlisted: {
-      'package.json': {
-        react: {
-          type: 'unlisted',
-          symbol: 'react',
-          filePath: 'package.json',
-          workspace: '.',
-        },
-        '@types/node': {
-          type: 'unlisted',
-          symbol: '@types/node',
-          filePath: 'package.json',
-          workspace: '.',
-        },
-      },
-    },
-    binaries: {},
-    unresolved: {
-      'src/index.ts': {
-        './missing-module': {
-          type: 'unresolved',
-          symbol: './missing-module',
-          filePath: 'src/index.ts',
-          workspace: '.',
-          line: 3,
-          col: 20,
-          pos: 45,
-        },
-      },
-    },
-    exports: {
-      'src/index.ts': {
-        unusedFunction: {
-          type: 'exports',
-          symbol: 'unusedFunction',
-          filePath: 'src/index.ts',
-          workspace: '.',
-          line: 10,
-          col: 14,
-          pos: 156,
-        },
-        unusedHelper: {
-          type: 'exports',
-          symbol: 'unusedHelper',
-          filePath: 'src/index.ts',
-          workspace: '.',
-          line: 25,
-          col: 14,
-          pos: 402,
-        },
-      },
-    },
-    nsExports: {},
-    types: {},
-    nsTypes: {},
-    enumMembers: {},
-    classMembers: {},
-    duplicates: {},
-  }
-
-  const mockReport: ReporterOptions['report'] = {
-    files: true,
-    _files: false,
-    dependencies: true,
-    devDependencies: false,
-    optionalPeerDependencies: false,
-    unlisted: true,
-    binaries: false,
-    unresolved: true,
-    exports: true,
-    nsExports: false,
-    types: false,
-    nsTypes: false,
-    enumMembers: false,
-    classMembers: false,
-    duplicates: false,
-  }
-
   it('should display unused files from issues.files', () => {
     const html = generateHtml({
-      issues: {
-        files: new Set(['src/unused-file.ts', 'src/old-component.tsx']),
-        _files: {},
-        dependencies: {},
-        devDependencies: {},
-        optionalPeerDependencies: {},
-        unlisted: {},
-        binaries: {},
-        unresolved: {},
-        exports: {},
-        nsExports: {},
-        types: {},
-        nsTypes: {},
-        enumMembers: {},
-        classMembers: {},
-        duplicates: {},
-      },
-      counters: { ...mockCounters, files: 2 },
-      report: mockReport,
+      issues: createIssuesWithFiles(['src/unused-file.ts', 'src/old-component.tsx']),
+      counters: createCounters({ files: 2 }),
       config: mockConfig,
+      cwd: process.cwd(),
     })
 
     expect(html).toContain('Files')
@@ -181,8 +30,8 @@ describe('HTML Generator', () => {
     const html = generateHtml({
       issues: mockIssues,
       counters: mockCounters,
-      report: mockReport,
       config: mockConfig,
+      cwd: process.cwd(),
     })
 
     expect(html).toContain('src/index.ts')
@@ -193,7 +42,7 @@ describe('HTML Generator', () => {
   })
 
   it('should display both unused files and issues together', () => {
-    const issuesWithFiles: ReporterOptions['issues'] = {
+    const issuesWithFiles = {
       ...mockIssues,
       files: new Set(['src/unused-file.ts', 'src/old-component.tsx']),
     }
@@ -201,8 +50,8 @@ describe('HTML Generator', () => {
     const html = generateHtml({
       issues: issuesWithFiles,
       counters: mockCounters,
-      report: mockReport,
       config: mockConfig,
+      cwd: process.cwd(),
     })
 
     // Should contain unused files category
@@ -216,23 +65,11 @@ describe('HTML Generator', () => {
   })
 
   it('should handle empty report and issues gracefully', () => {
-    const emptyCounters = {
-      files: 0,
-      dependencies: 0,
-      devDependencies: 0,
-      unlisted: 0,
-      unresolved: 0,
-      exports: 0,
-      types: 0,
-      duplicates: 0,
-      enumMembers: 0,
-      classMembers: 0,
-    }
     const html = generateHtml({
       issues: {} as any,
-      counters: emptyCounters as any,
-      report: { files: [] } as any,
+      counters: createEmptyCounters(),
       config: mockConfig,
+      cwd: process.cwd(),
     })
 
     expect(html).toContain('All Clear')
@@ -242,8 +79,8 @@ describe('HTML Generator', () => {
     const html = generateHtml({
       issues: mockIssues,
       counters: mockCounters,
-      report: mockReport,
       config: mockConfig,
+      cwd: process.cwd(),
     })
 
     expect(html).toContain('<!DOCTYPE html>')
@@ -257,8 +94,8 @@ describe('HTML Generator', () => {
     const html = generateHtml({
       issues: mockIssues,
       counters: mockCounters,
-      report: mockReport,
       config: mockConfig,
+      cwd: process.cwd(),
     })
 
     expect(html).toContain('<title>Test Report</title>')
@@ -269,8 +106,8 @@ describe('HTML Generator', () => {
     const html = generateHtml({
       issues: mockIssues,
       counters: mockCounters,
-      report: mockReport,
-      config: { ...mockConfig, autoStyles: true },
+      config: createConfig({ autoStyles: true }),
+      cwd: process.cwd(),
     })
 
     expect(html).toContain('<style>')
@@ -281,8 +118,8 @@ describe('HTML Generator', () => {
     const html = generateHtml({
       issues: mockIssues,
       counters: mockCounters,
-      report: mockReport,
       config: mockConfig,
+      cwd: process.cwd(),
     })
 
     expect(html).toContain('Summary')
@@ -293,8 +130,8 @@ describe('HTML Generator', () => {
     const html = generateHtml({
       issues: mockIssues,
       counters: mockCounters,
-      report: mockReport,
       config: mockConfig,
+      cwd: process.cwd(),
     })
 
     expect(html).toContain('id="search-input"')
@@ -305,8 +142,8 @@ describe('HTML Generator', () => {
     const html = generateHtml({
       issues: mockIssues,
       counters: mockCounters,
-      report: mockReport,
       config: mockConfig,
+      cwd: process.cwd(),
     })
 
     expect(html).toContain('summary-card')
@@ -318,8 +155,8 @@ describe('HTML Generator', () => {
     const html = generateHtml({
       issues: mockIssues,
       counters: mockCounters,
-      report: mockReport,
       config: mockConfig,
+      cwd: process.cwd(),
     })
 
     // Should show the correct total (11)
@@ -340,8 +177,8 @@ describe('HTML Generator', () => {
     const html = generateHtml({
       issues: mockIssues,
       counters: mockCounters,
-      report: mockReport,
       config: mockConfig,
+      cwd: process.cwd(),
     })
 
     // Exports: 3/11 = 27.3%
@@ -358,8 +195,8 @@ describe('HTML Generator', () => {
     const html = generateHtml({
       issues: mockIssues,
       counters: mockCounters,
-      report: mockReport,
       config: mockConfig,
+      cwd: process.cwd(),
     })
 
     expect(html).toContain('openInIDE')
@@ -367,7 +204,7 @@ describe('HTML Generator', () => {
   })
 
   it('should escape HTML in file paths and issue names', () => {
-    const maliciousIssues: ReporterOptions['issues'] = {
+    const maliciousIssues = {
       files: new Set(),
       _files: {
         '<script>alert("xss")</script>': {
@@ -398,10 +235,10 @@ describe('HTML Generator', () => {
     }
 
     const html = generateHtml({
-      issues: maliciousIssues,
-      counters: { ...mockCounters, _files: 1 },
-      report: mockReport,
+      issues: maliciousIssues as any,
+      counters: createCounters({ _files: 1 }),
       config: mockConfig,
+      cwd: process.cwd(),
     })
 
     expect(html).not.toContain('<script>alert("xss")</script>')
@@ -411,30 +248,11 @@ describe('HTML Generator', () => {
   })
 
   it('should show success message when no issues', () => {
-    const emptyCounters = Object.keys(mockCounters).reduce((acc, key) => ({ ...acc, [key]: 0 }), {}) as any
-    const emptyIssues: ReporterOptions['issues'] = {
-      files: new Set(),
-      _files: {},
-      dependencies: {},
-      devDependencies: {},
-      optionalPeerDependencies: {},
-      unlisted: {},
-      binaries: {},
-      unresolved: {},
-      exports: {},
-      nsExports: {},
-      types: {},
-      nsTypes: {},
-      enumMembers: {},
-      classMembers: {},
-      duplicates: {},
-    }
-
     const html = generateHtml({
-      issues: emptyIssues,
-      counters: emptyCounters,
-      report: mockReport,
+      issues: createEmptyIssues(),
+      counters: createEmptyCounters(),
       config: mockConfig,
+      cwd: process.cwd(),
     })
 
     expect(html).toContain('All Clear!')
@@ -445,8 +263,8 @@ describe('HTML Generator', () => {
     const html = generateHtml({
       issues: mockIssues,
       counters: mockCounters,
-      report: mockReport,
       config: mockConfig,
+      cwd: process.cwd(),
     })
 
     expect(html).toContain('<script>')
@@ -458,8 +276,8 @@ describe('HTML Generator', () => {
     const html = generateHtml({
       issues: mockIssues,
       counters: mockCounters,
-      report: mockReport,
       config: mockConfig,
+      cwd: process.cwd(),
     })
 
     expect(html).toContain('Exports')
@@ -471,8 +289,8 @@ describe('HTML Generator', () => {
     const html = generateHtml({
       issues: mockIssues,
       counters: mockCounters,
-      report: mockReport,
       config: mockConfig,
+      cwd: process.cwd(),
     })
 
     expect(html).toContain('src/index.ts')
@@ -487,13 +305,57 @@ describe('HTML Generator', () => {
     const html = generateHtml({
       issues: mockIssues,
       counters: mockCounters,
-      report: mockReport,
       config: mockConfig,
+      cwd: process.cwd(),
     })
 
     expect(html).toContain('10:14') // line:col from unusedFunction
     expect(html).toContain('position') // class name for position display
     expect(html).toContain('issue-location') // table cell class
     expect(html).toContain('file-path') // file path class
+  })
+
+  it('should include custom styles from file when customStyles is provided', () => {
+    const fs = require('node:fs')
+    const path = require('node:path')
+
+    // Create a temporary custom styles file
+    const customStylesPath = path.join(process.cwd(), 'test-custom-styles.css')
+    fs.writeFileSync(customStylesPath, '.custom-class { color: purple; }')
+
+    try {
+      const html = generateHtml({
+        issues: mockIssues,
+        counters: mockCounters,
+        config: createConfig({ customStyles: customStylesPath }),
+        cwd: process.cwd(),
+      })
+
+      expect(html).toContain('.custom-class { color: purple; }')
+    } finally {
+      // Clean up
+      if (fs.existsSync(customStylesPath)) {
+        fs.unlinkSync(customStylesPath)
+      }
+    }
+  })
+
+  it('should handle missing custom styles file gracefully', () => {
+    const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+    const html = generateHtml({
+      issues: mockIssues,
+      counters: mockCounters,
+      config: createConfig({ customStyles: '/path/to/nonexistent/file.css' }),
+      cwd: process.cwd(),
+    })
+
+    // Should still generate HTML
+    expect(html).toContain('<!DOCTYPE html>')
+
+    // Should warn about missing file
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Warning: Could not load custom styles'))
+
+    consoleSpy.mockRestore()
   })
 })

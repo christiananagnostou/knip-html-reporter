@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { loadConfig } from '../src/config.js'
 import { writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
@@ -108,5 +108,69 @@ describe('Config Loader', () => {
     expect(config.output).toBe('knip-report.html') // default
     expect(config.autoOpen).toBe(true) // from options
     expect(config.autoStyles).toBe(true) // default
+  })
+
+  it('should load config from .js file', async () => {
+    const configPath = join(TEST_DIR, 'knip-html-reporter.config.js')
+    const configData = `export default {
+  output: 'from-js-file.html',
+  title: 'JS Config',
+  autoOpen: true
+}`
+
+    writeFileSync(configPath, configData)
+
+    const config = await loadConfig(TEST_DIR)
+
+    expect(config.output).toBe('from-js-file.html')
+    expect(config.title).toBe('JS Config')
+    expect(config.autoOpen).toBe(true)
+  })
+
+  it('should load config from .mjs file', async () => {
+    const configPath = join(TEST_DIR, 'knip-html-reporter.config.mjs')
+    const configData = `export default {
+  output: 'from-mjs-file.html',
+  title: 'MJS Config'
+}`
+
+    writeFileSync(configPath, configData)
+
+    const config = await loadConfig(TEST_DIR)
+
+    expect(config.output).toBe('from-mjs-file.html')
+    expect(config.title).toBe('MJS Config')
+  })
+
+  it('should handle errors in package.json gracefully', async () => {
+    const packageJsonPath = join(TEST_DIR, 'package.json')
+
+    // Write invalid JSON
+    writeFileSync(packageJsonPath, '{ "name": "test", invalid json }')
+
+    const config = await loadConfig(TEST_DIR)
+
+    // Should return defaults without throwing
+    expect(config.output).toBe('knip-report.html')
+  })
+
+  it('should prioritize config file over package.json', async () => {
+    // Create both a config file and package.json
+    const configPath = join(TEST_DIR, '.knip-html-reporter.json')
+    writeFileSync(configPath, JSON.stringify({ output: 'from-config.html' }))
+
+    const packageJsonPath = join(TEST_DIR, 'package.json')
+    const packageData = {
+      name: 'test-package',
+      'knip-html-reporter': {
+        output: 'from-package.html',
+      },
+    }
+    writeFileSync(packageJsonPath, JSON.stringify(packageData))
+
+    const config = await loadConfig(TEST_DIR)
+
+    // Config file should win
+    expect(config.output).toBe('from-config.html')
   })
 })

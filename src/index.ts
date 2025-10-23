@@ -8,7 +8,7 @@ import { writeHtmlFile, openInBrowser } from './utils.js'
  * Transforms Knip analysis results into beautiful HTML reports
  */
 const reporter: Reporter = async (options) => {
-  const { issues, counters, report, cwd } = options
+  const { issues, counters, cwd } = options
 
   // Load configuration from file or use defaults
   const config = await loadConfig(cwd, options.options)
@@ -17,8 +17,8 @@ const reporter: Reporter = async (options) => {
   const html = generateHtml({
     issues,
     counters,
-    report,
     config,
+    cwd,
   })
 
   // Write HTML file

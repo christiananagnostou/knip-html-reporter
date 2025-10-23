@@ -620,6 +620,14 @@ export function getDefaultStyles(): string {
       max-width: 400px;
     }
     
+    .symbol-type {
+      color: var(--text-tertiary);
+      font-size: 0.75rem;
+      font-weight: 400;
+      margin-left: 8px;
+      font-style: italic;
+    }
+    
     .issue-location {
       font-family: var(--font-mono);
       min-width: 200px;
