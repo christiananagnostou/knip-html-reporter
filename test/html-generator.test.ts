@@ -206,7 +206,14 @@ describe('HTML Generator', () => {
   it('should escape HTML in file paths and issue names', () => {
     const maliciousIssues = {
       files: new Set(),
-      _files: {
+      _files: {},
+      dependencies: {},
+      devDependencies: {},
+      optionalPeerDependencies: {},
+      unlisted: {},
+      binaries: {},
+      unresolved: {},
+      exports: {
         '<script>alert("xss")</script>': {
           '<img src=x onerror=alert(1)>': {
             type: 'exports',
@@ -219,13 +226,6 @@ describe('HTML Generator', () => {
           },
         },
       },
-      dependencies: {},
-      devDependencies: {},
-      optionalPeerDependencies: {},
-      unlisted: {},
-      binaries: {},
-      unresolved: {},
-      exports: {},
       nsExports: {},
       types: {},
       nsTypes: {},
@@ -236,7 +236,7 @@ describe('HTML Generator', () => {
 
     const html = generateHtml({
       issues: maliciousIssues as any,
-      counters: createCounters({ _files: 1 }),
+      counters: createCounters({ exports: 1 }),
       config: mockConfig,
       cwd: process.cwd(),
     })

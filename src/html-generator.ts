@@ -270,11 +270,13 @@ function generateIssuesSection(issues: ReporterOptions['issues'], cwd: string): 
       'files',
       filesArray.map((file) => {
         const relativeFile = toRelativePath(file, cwd)
+        // Extract just the filename for display
+        const fileName = relativeFile.split('/').pop() || relativeFile
         return {
-          symbol: relativeFile,
+          symbol: fileName,
           issue: {
             type: 'files' as any,
-            symbol: relativeFile,
+            symbol: fileName,
             filePath: file,
             workspace: '.',
             line: 1,
@@ -290,15 +292,6 @@ function generateIssuesSection(issues: ReporterOptions['issues'], cwd: string): 
   const pushIssue = (categoryKey: string, payload: { symbol: string; issue: Issue; filePath: string }) => {
     if (!categorizedIssues.has(categoryKey)) categorizedIssues.set(categoryKey, [])
     categorizedIssues.get(categoryKey)!.push(payload)
-  }
-
-  // Handle issues from _files
-  if (issues._files && Object.keys(issues._files).length > 0) {
-    for (const [file, fileIssues] of Object.entries(issues._files)) {
-      for (const [symbol, issue] of Object.entries(fileIssues)) {
-        pushIssue(issue.type || 'unknown', { symbol, issue, filePath: file })
-      }
-    }
   }
 
   // Process other issue types
