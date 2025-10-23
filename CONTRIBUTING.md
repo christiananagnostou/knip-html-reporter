@@ -92,7 +92,8 @@ Types:
 - `refactor`: Code refactoring
 
 Examples:
-```
+
+```text
 feat(search): add fuzzy search functionality
 fix(styles): resolve dark mode contrast issues
 docs(readme): update installation instructions
@@ -180,116 +181,65 @@ Before submitting a PR, ensure:
 
 > **Note**: This section is for maintainers only.
 
-### Prerequisites
+### Creating a Release (Simple 3-Step Process)
 
-1. **NPM Token Setup** (One-time)
-   - Generate an NPM token at [npmjs.com](https://www.npmjs.com/settings/YOUR_USERNAME/tokens)
-   - Add it to GitHub repository secrets as `NPM_TOKEN`
-   - Go to: Repository Settings → Secrets and variables → Actions → New repository secret
+The project uses automated releases via GitHub Actions. Everything is automated once you publish the release.
 
-### Creating a Release
-
-The project uses automated releases via GitHub Actions. Here's the complete workflow:
-
-#### 1. Update Version and Changelog
+#### Step 1: Bump Version
 
 ```bash
-# Update package.json version
 npm version patch  # or minor, or major
-
-# Update CHANGELOG.md
-# Move items from [Unreleased] to new version section
-# Add release date
-# Example:
-## [0.3.0] - 2025-10-23
-### Added
-- New feature X
-- New feature Y
-
-# Commit changes
-git add package.json CHANGELOG.md
-git commit -m "chore: bump version to 0.3.0"
-git push origin main
+git push # or `git push && git push --tags` if you don't automatically push tags with git
 ```
 
-#### 2. Create GitHub Release
+#### Step 2: Publish the GitHub Release
 
-**Option A: Via GitHub UI** (Recommended)
+1. Go to [Releases](https://github.com/christiananagnostou/knip-html-reporter/releases)
+2. Click **"Edit"** on the draft release that was auto-generated
+3. Review/edit the release notes
+4. Click **"Publish release"**
 
-1. Go to repository → Releases → "Draft a new release"
-2. Click "Choose a tag" and type new version (e.g., `v0.3.0`)
-3. Click "Create new tag: v0.3.0 on publish"
-4. Set release title (e.g., `v0.3.0`)
-5. Use the auto-generated release notes or write custom notes
-6. Click "Publish release"
+#### Step 3: Wait for Automation
 
-**Option B: Via GitHub CLI**
+GitHub Actions will automatically:
 
-```bash
-gh release create v0.3.0 \
-  --title "v0.3.0" \
-  --notes "Release notes here" \
-  --latest
-```
+- Run all tests
+- Build the project
+- Publish to NPM with provenance attestation
+- Update the release with status
 
-#### 3. Automated Publishing
+Monitor progress: [Actions tab](https://github.com/christiananagnostou/knip-html-reporter/actions)
 
-Once the release is published, GitHub Actions will automatically:
+Verify publication: [NPM package page](https://www.npmjs.com/package/knip-html-reporter)
 
-1. Run all tests
-2. Check TypeScript types
-3. Build the project
-4. Verify package contents
-5. Publish to NPM with provenance
-6. Comment on the release with NPM link
-
-Monitor the workflow at: `Actions` → `Release` workflow
-
-#### 4. Verify Publication
-
-After the workflow completes:
-
-1. Check [NPM package page](https://www.npmjs.com/package/knip-html-reporter)
-2. Verify version is live
-3. Test installation: `npm install knip-html-reporter@latest`
-
-### Release Drafter
-
-The repository uses Release Drafter to automatically generate draft releases:
-
-- Drafts are auto-updated as PRs are merged
-- Uses PR labels to categorize changes
-- Suggests next version number based on labels
-
-To use:
-
-1. Check the [Releases page](https://github.com/christiananagnostou/knip-html-reporter/releases)
-2. Review the draft release
-3. Edit as needed
-4. Publish when ready
+---
 
 ### Version Guidelines (Semantic Versioning)
 
-- **Major (1.0.0)**: Breaking changes, major rewrites
-- **Minor (0.1.0)**: New features, backwards compatible
 - **Patch (0.0.1)**: Bug fixes, small improvements
+- **Minor (0.1.0)**: New features, backwards compatible
+- **Major (1.0.0)**: Breaking changes
 
-### Rollback Procedure
+### How Release Drafter Works
 
-If a release has issues:
+- Automatically creates/updates draft releases as you push to main
+- For direct pushes: Creates empty drafts you can fill in
+- For PRs: Auto-generates release notes based on PR titles and labels
 
-1. **Deprecate the bad version on NPM**
+### If Something Goes Wrong
+
+**Deprecate the bad version:**
 
 ```bash
-npm deprecate knip-html-reporter@0.3.0 "This version has issues, use 0.3.1"
+npm deprecate knip-html-reporter@X.X.X "Use version X.X.Y instead"
 ```
 
-2. **Publish a fix**
+**Then publish a fix:**
 
 ```bash
-npm version patch  # Creates 0.3.1
-# Fix the issue
-# Create new release following normal process
+npm version patch
+git push
+# Publish the new draft release on GitHub
 ```
 
 ## Questions?
