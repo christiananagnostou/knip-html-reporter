@@ -8,6 +8,7 @@ coverage/
 
 # Config files
 tsconfig.json
+tsconfig.test.json
 vitest.config.ts
 knip.json
 .knip-html-reporter.example.json
