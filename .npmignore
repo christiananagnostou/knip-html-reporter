@@ -1,0 +1,40 @@
+# Development files
+src/
+test/
+coverage/
+.github/
+.vscode/
+.idea/
+
+# Config files
+tsconfig.json
+vitest.config.ts
+knip.json
+.knip-html-reporter.example.json
+.knip-html-reporter.schema.json
+knip-html-reporter.config.example.js
+
+# Demo and documentation
+demo.js
+demo-report.html
+ARCHITECTURE.md
+FEATURES.md
+
+# Test artifacts
+test-fixtures-*
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+bun.lockb
+
+# Misc
+.env
+.env.local
+*.tsbuildinfo
